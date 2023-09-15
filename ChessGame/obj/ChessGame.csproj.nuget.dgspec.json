@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\GitHub\\ChessGame\\ChessGame\\ChessGame.csproj": {}
+    "D:\\Lasalle\\Fall2023\\Professional\\a\\AliasTheBlank\\ChessGame\\ChessGame\\ChessGame.csproj": {}
   },
   "projects": {
-    "C:\\GitHub\\ChessGame\\ChessGame\\ChessGame.csproj": {
+    "D:\\Lasalle\\Fall2023\\Professional\\a\\AliasTheBlank\\ChessGame\\ChessGame\\ChessGame.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\GitHub\\ChessGame\\ChessGame\\ChessGame.csproj",
+        "projectUniqueName": "D:\\Lasalle\\Fall2023\\Professional\\a\\AliasTheBlank\\ChessGame\\ChessGame\\ChessGame.csproj",
         "projectName": "ChessGame",
-        "projectPath": "C:\\GitHub\\ChessGame\\ChessGame\\ChessGame.csproj",
-        "packagesPath": "C:\\Users\\franv\\.nuget\\packages\\",
-        "outputPath": "C:\\GitHub\\ChessGame\\ChessGame\\obj\\",
+        "projectPath": "D:\\Lasalle\\Fall2023\\Professional\\a\\AliasTheBlank\\ChessGame\\ChessGame\\ChessGame.csproj",
+        "packagesPath": "C:\\Users\\autok\\.nuget\\packages\\",
+        "outputPath": "D:\\Lasalle\\Fall2023\\Professional\\a\\AliasTheBlank\\ChessGame\\ChessGame\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\franv\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\autok\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -39,6 +39,9 @@
           "warnAsError": [
             "NU1605"
           ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "default"
         }
       },
       "frameworks": {
@@ -65,24 +68,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[6.0.16, 6.0.16]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.win-x64",
-              "version": "[6.0.16, 6.0.16]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[6.0.16, 6.0.16]"
-            },
-            {
-              "name": "Microsoft.WindowsDesktop.App.Ref",
-              "version": "[6.0.16, 6.0.16]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -91,7 +76,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100-preview.4.23260.5\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.100-rc.1.23455.8\\RuntimeIdentifierGraph.json"
         }
       }
     }
