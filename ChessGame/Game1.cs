@@ -8,6 +8,7 @@ public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+    private MouseState _mouseState = Mouse.GetState();
 
     private Texture2D bgSprite;
 
