@@ -12,12 +12,24 @@
         <ApplicationIcon>Icon.ico</ApplicationIcon>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.1.303"/>
+        <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
         <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303"/>
-        <PackageReference Include="Nez" Version="0.10.0" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\..\..\Users\franv\OneDrive\Escritorio\Nez-master\Nez.Portable\Nez.MG38.csproj" />
+      <ProjectReference Include="..\Nez-master\Nez.Portable\Nez.MG38.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="../Nez-master/DefaultContent/MG3.8Effects/**/*.mgfxo">
+            <Link>Content/nez/effects/%(RecursiveDir)%(Filename)%(Extension)</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Include="../Nez-master/DefaultContent/textures/**/*.xnb">
+            <Link>Content/nez/textures/%(RecursiveDir)%(Filename)%(Extension)</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="Scenes\" />
     </ItemGroup>
     <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
         <Message Text="Restoring dotnet tools" Importance="High"/>
