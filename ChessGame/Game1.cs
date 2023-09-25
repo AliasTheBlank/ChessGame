@@ -1,34 +1,31 @@
-﻿using Microsoft.Xna.Framework;
+﻿
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Nez;
+
 
 namespace ChessGame;
 
-public class Game1 : Game
+public class Game1 : Nez.Core
 {
-    private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
+    //private GraphicsDeviceManager _graphics;
+    //private SpriteBatch _spriteBatch;
 
-    private Texture2D bgSprite;
+    //private Texture2D bgSprite;
 
-    public Game1()
-    {
-        _graphics = new GraphicsDeviceManager(this);
-        Content.RootDirectory = "Content";
-        IsMouseVisible = true;
-
-        _graphics.PreferredBackBufferHeight = 728;
-        _graphics.PreferredBackBufferWidth = 728;
-        _graphics.ApplyChanges();
-    }
+    
 
     protected override void Initialize()
     {
         // TODO: Add your initialization logic here
 
         base.Initialize();
+        
+        
+        Scene = new Scene();
     }
-
+/*
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -63,5 +60,5 @@ public class Game1 : Game
         _spriteBatch.End();
 
         base.Draw(gameTime);
-    }
+    }*/
 }
