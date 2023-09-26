@@ -36,7 +36,6 @@ public class Game1 : Nez.Core
         
         Window.AllowUserResizing=true;
         Scene = new MenuScene();
-        //var Stage = new Stage();
     }
 /*
     protected override void LoadContent()
