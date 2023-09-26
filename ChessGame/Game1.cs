@@ -1,4 +1,5 @@
 ﻿
+using ChessGame.Scenes;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -23,7 +24,7 @@ public class Game1 : Nez.Core
         base.Initialize();
         
         
-        Scene = new Scene();
+        Scene = new CGGameScene();
     }
 /*
     protected override void LoadContent()
