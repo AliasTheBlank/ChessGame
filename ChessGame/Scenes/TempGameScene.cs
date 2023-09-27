@@ -11,11 +11,9 @@ using Nez.Tweens;
 using Nez.Console;
 
 
-
 namespace ChessGame.Scenes
 {
-   // [SampleScene("Menu Scene", 9999, "Scene with a single Entity. The minimum to have something to show")]
-    public class MenuScene:Scene
+    public class TempGameScene:Scene
     {
         public const int ScreenSpaceRenderLayer = 999;
         public UICanvas Canvas;
@@ -26,81 +24,89 @@ namespace ChessGame.Scenes
         static bool _needsFullRenderSizeForUi;
         NezSpriteFont _font;
         SpriteFont _spriteFont;
+
+        public TempGameScene() { }
+        
         public override void Initialize()
         {
-
-            //AddRenderer(new DefaultRenderer());
             SetDesignResolution(1280, 720, SceneResolutionPolicy.None);
             Screen.SetSize(1280, 720);
             Canvas = CreateEntity("ui").AddComponent(new UICanvas());
             Canvas.IsFullScreen = false;
             Canvas.RenderLayer = ScreenSpaceRenderLayer;
             SetUpUI();
+
         }
-
-
-        public MenuScene(){}
 
         void SetUpUI()
         {
-           
+
             _table = Canvas.Stage.AddElement(new Table());
             var UI = new Table();
-            _table.SetFillParent(true).Center();
+            _table.SetFillParent(true).Center().Top();
 
             var topButtonStyle = new TextButtonStyle(new PrimitiveDrawable(Color.Black, 10f),
                 new PrimitiveDrawable(Color.Yellow), new PrimitiveDrawable(Color.DarkSlateBlue))
             {
                 DownFontColor = Color.Black
             };
-            
+
             topButtonStyle.FontScale = 1.5f;
-          
+
+
+            var menuTab = new Table().Center();
             
-        
+            var lblStyle = new LabelStyle(Color.Black);
+            lblStyle.FontScale = 2.5f;
 
-            _table.Add(new TextButton("Single Player", topButtonStyle)).SetFillX().SetMinHeight(50)
+            _table.Add(new TextButton("Toggle Menu List", topButtonStyle)).SetFillX().SetMinHeight(30)
+               .GetElement<Button>().OnClicked += butt =>
+               {
+                   menuTab.SetIsVisible(!menuTab.IsVisible());
+               };
+            _table.Add(new TextButton("Start Game", topButtonStyle)).SetFillX().SetMinHeight(30)
+              .GetElement<Button>().OnClicked += butt =>
+              {
+                  
+                  //menuTab.SetIsVisible(!menuTab.IsVisible());
+              };
+            _table.Add(new Label("Player _", lblStyle));
+            _table.Add(new Label("Timer _", lblStyle));
+
+            _table.Row();
+
+            _table.Add(menuTab).SetAlign(Align.Top);
+
+            menuTab.Add(new TextButton("Back to Main menu", topButtonStyle)).SetFillX().SetMinHeight(30)
                .GetElement<TextButton>().OnClicked += butt =>
                {
-                   
+                   //add reminder if user want to resign
                    TweenManager.StopAllTweens();
                    Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
-                   Core.StartSceneTransition(new FadeTransition(() => new BasicScene()));
+                   Core.StartSceneTransition(new FadeTransition(() => new MenuScene()));
                };
-            _table.Row().SetPadTop(20);
+            menuTab.Row();
 
+            menuTab.Add(new TextButton("Quit", topButtonStyle)).SetFillX().SetMinHeight(30)
+               .GetElement<TextButton>().OnClicked += butt =>
+               {
+                   //add reminder if user want to resign
 
-
-            _table.Add(new TextButton("Multi Player Offline", topButtonStyle)).SetFillX().SetMinHeight(50)
-               .GetElement<TextButton>().OnClicked += butt =>
-               {
-                   //Go to scene
-                 
-                   TweenManager.StopAllTweens();
-                   Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
-                   Core.StartSceneTransition(new FadeTransition(() => new TempGameScene()));
-               };
-            _table.Row().SetPadTop(20);
-            _table.Add(new TextButton("Multi Player LAN", topButtonStyle)).SetFillX().SetMinHeight(50)
-               .GetElement<TextButton>().OnClicked += butt =>
-               {
-                   //Go to scene
-               };
-            _table.Row().SetPadTop(20);
-            _table.Add(new TextButton("Multi Player WLAN", topButtonStyle)).SetFillX().SetMinHeight(50)
-               .GetElement<TextButton>().OnClicked += butt =>
-               {
-                   //Go to scene
-               };
-            _table.Row().SetPadTop(20);
-            _table.Add(new TextButton("Quit", topButtonStyle)).SetFillX().SetMinHeight(50)
-               .GetElement<TextButton>().OnClicked += butt =>
-               {
                    Environment.Exit(0);
                };
+
+            
+             
+            Skin skin = Skin.CreateDefaultSkin();
+            
+            _table.Row();
+            SelectBox<Button> gameModes = new SelectBox<Button>(skin);
+            
+            _table.Add(gameModes);
+            _table.Row();
+
+
         }
+
     }
-
 }
-
-

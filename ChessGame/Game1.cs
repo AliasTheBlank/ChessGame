@@ -35,7 +35,7 @@ public class Game1 : Nez.Core
         base.Initialize();
         
         Window.AllowUserResizing=true;
-        Scene = new MenuScene();
+        Scene = new TempGameScene();
         //var Stage = new Stage();
     }
 /*
