@@ -4,12 +4,11 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Nez;
 using Microsoft.Xna.Framework.Graphics;
-using Nez.Samples;
 using Nez.UI;
 using Nez.ImGuiTools;
 using Nez.Tweens;
 using Nez.Console;
-
+using ChessGame.UI;
 
 namespace ChessGame.Scenes
 {
@@ -20,10 +19,6 @@ namespace ChessGame.Scenes
 
         Table _table;
 
-        ScreenSpaceRenderer _screenSpaceRenderer;
-        static bool _needsFullRenderSizeForUi;
-        NezSpriteFont _font;
-        SpriteFont _spriteFont;
 
         public TempGameScene() { }
         
@@ -31,14 +26,15 @@ namespace ChessGame.Scenes
         {
             SetDesignResolution(1280, 720, SceneResolutionPolicy.None);
             Screen.SetSize(1280, 720);
-            Canvas = CreateEntity("ui").AddComponent(new UICanvas());
+            /*Canvas = CreateEntity("ui").AddComponent(new UICanvas());
             Canvas.IsFullScreen = false;
             Canvas.RenderLayer = ScreenSpaceRenderLayer;
-            SetUpUI();
+            SetUpUI();*/
+            CreateEntity("game-ui").AddComponent<GameUI>();
 
         }
 
-        void SetUpUI()
+       /* void SetUpUI()
         {
 
             _table = Canvas.Stage.AddElement(new Table());
@@ -106,7 +102,7 @@ namespace ChessGame.Scenes
             _table.Row();
 
 
-        }
+        }*/
 
     }
 }

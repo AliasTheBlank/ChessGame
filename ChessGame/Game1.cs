@@ -10,7 +10,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Nez;
 using Microsoft.Xna.Framework.Graphics;
-using Nez.Samples;
+
 using Nez.UI;
 using Nez.ImGuiTools;
 using Nez.Tweens;
@@ -35,7 +35,7 @@ public class Game1 : Nez.Core
         base.Initialize();
         
         Window.AllowUserResizing=true;
-        Scene = new TempGameScene();
+        Scene = new MenuScene();
         //var Stage = new Stage();
     }
 /*
