@@ -1,4 +1,4 @@
-﻿using ChessGame.Entities.Components;
+using ChessGame.Entities.Components;
 using ChessGame.Structs;
 using Microsoft.Xna.Framework.Graphics;
 using Nez;

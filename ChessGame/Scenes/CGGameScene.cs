@@ -1,7 +1,6 @@
-﻿using ChessGame.Actors;
+using ChessGame.Actors;
 using ChessGame.Entities.Board;
 using Nez;
-
 namespace ChessGame.Scenes;
 
 public class CGGameScene : Scene
