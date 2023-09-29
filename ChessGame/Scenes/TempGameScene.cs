@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Xna.Framework;
-using Nez;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Nez;
 using Nez.UI;
-using Nez.ImGuiTools;
-using Nez.Tweens;
-using Nez.Console;
 using ChessGame.UI;
 
 namespace ChessGame.Scenes

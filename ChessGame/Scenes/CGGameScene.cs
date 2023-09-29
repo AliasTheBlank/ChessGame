@@ -1,11 +1,6 @@
-﻿using System.Linq;
-using ChessGame.Actors;
+﻿using ChessGame.Actors;
 using ChessGame.Entities.Board;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using Nez;
-using Nez.Sprites;
-using Nez.Textures;
 
 namespace ChessGame.Scenes;
 
