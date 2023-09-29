@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using ChessGame.Entities.Board;
+using ChessGame.Structs;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Nez;
 using Nez.Sprites;
@@ -6,67 +8,82 @@ using Nez.Textures;
 
 namespace ChessGame.Actors;
 
-public class CGBoard : Entity
+public class CGBoard
 {
-    private int _dimensions;
+    private Scene OwningScene { get; }
     
-    public CGTile[,] TileBoard;
+    /// <summary>
+    /// 
+    /// </summary>
+    private Texture2D OddTileTexture { get; set; }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    private Texture2D EvenTileTexture { get; set; }
 
-    private Rectangle limits;
+    private int TileSpawnOffset { get; set; }
 
-
-    public CGBoard(Scene scene, int dimensions = 8)
+    private int TileSpacing { get; set; }
+    
+    public enum TileType
     {
-        limits = new Rectangle(0, 0, 700, 700);
-        
-        
-        
-        _dimensions = dimensions;
-        TileBoard = new CGTile[_dimensions, _dimensions];
-        Scene = scene;
-
-        int column = 65;
-        int row = 8;
-
-        int X = 60;
-        int Y = 60;
-        for (int i = 0; i < TileBoard.GetLength(0); i++)
+        Odd,
+        Even
+    }
+    
+    public CGBoard(Scene owningScene)
+    {
+        OwningScene = owningScene;
+    }
+    
+    public CGBoard SetTexture(TileType tileType, string texturePath)
+    {
+        switch (tileType)
         {
-            for (int j = 0; j < TileBoard.GetLength(1); j++)
-            {
-
-                Texture2D texture;
-                if ((j + i) % 2 == 0)
-                {
-                    texture = Scene.Content.LoadTexture(@"Content/Sprites/WhiteTile.png");
-                }
-                else
-                {
-                    texture = Scene.Content.LoadTexture(@"Content/Sprites/BlackTile.png");
-                }
-                TileBoard[i, j] = new ((char)column, row, new Sprite(texture));
-                var tile = Scene.AddEntity(TileBoard[i, j]);
-                tile.Transform.SetPosition(new Vector2(X, Y));
-                X += 110;
-                column++;
-            }
-            
-            column = 65;
-            row--;
-            X = 60;
-            Y += 110;
+            case TileType.Odd:
+                OddTileTexture = OwningScene.Content.LoadTexture(texturePath);
+                break;
+            case TileType.Even:
+                EvenTileTexture = OwningScene.Content.LoadTexture(texturePath);;
+                break;
         }
+
+        return this;
+    }
+    
+    public CGBoard SetOffset(int offset)
+    {
+        TileSpawnOffset = offset;
+        return this;
+    }
+    
+    public CGBoard SetSpacing(int spacing)
+    {
+        TileSpacing = spacing;
+        return this;
     }
 
-    public CGTile this[int x, int y]
+
+    // TODO: Change to return the tiles in the most convenient way
+    public void Generate(int size = 8)
     {
-        get
+        var y = OddTileTexture.Height + TileSpacing;
+        var x = OddTileTexture.Width + TileSpacing;
+        
+        for (int row = 0; row < size; row++)
         {
-            if (x >= 0 && x < TileBoard.GetLength(0) && y >= 0 && y < TileBoard.GetLength(1))
+            var tileXPosition = (x * row) + TileSpawnOffset;
+            for (int column = 0; column < size; column++)
             {
-                return TileBoard[x, y];
+                var tileYPosition = (y * column) + TileSpawnOffset;
+                
+                var texture = (column + row) % 2 == 0 ? EvenTileTexture : OddTileTexture;
+                
+                BoardPosition boardPos = new((char)(row + 65), size - column);
+                var tile = OwningScene.AddEntity(new CGTile(boardPos, texture));
+                tile.Transform.SetPosition(new Vector2(tileXPosition, tileYPosition));
             }
-            return null;
         }
     }
 }

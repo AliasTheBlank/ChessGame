@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using ChessGame.Actors;
+using ChessGame.Entities.Board;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Nez;
@@ -28,17 +29,20 @@ public class CGGameScene : Scene
         TileBoard = new CGTile[8, 8];
         
         
-        Screen.SetSize(640*2, 640*2);
+        Screen.SetSize(660*2, 660*2);
     
         // create our canvas and put it on the screen space render layer
         Canvas = CreateEntity("ui").AddComponent(new UICanvas());
         Canvas.IsFullScreen = true;
         Canvas.RenderLayer = ScreenSpaceRenderLayer;
+        
+        var cbGenerator = new CGBoard(this);
 
-
-        var texture2 = Content.LoadTexture(@"Content/Sprites/WhiteTile.png");
-        //var tile = AddEntity(new CGTile('F',1,texture2));
-        var board = AddEntity(new CGBoard(this));
+        cbGenerator
+            .SetTexture(CGBoard.TileType.Even, @"Content/Sprites/WhiteTile.png")
+            .SetTexture(CGBoard.TileType.Odd, @"Content/Sprites/BlackTile.png")
+            .SetOffset(160)
+            .Generate();
 
     }
 }
