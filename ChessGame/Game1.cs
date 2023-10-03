@@ -14,7 +14,5 @@ public class Game1 : Nez.Core
         
         Window.AllowUserResizing=true;
         Scene = new MenuScene();
-        
-        //Scene = new CGGameScene();
     }
 }
