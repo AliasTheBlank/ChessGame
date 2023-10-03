@@ -3,6 +3,7 @@ using ChessGame.Entities.Board;
 using ChessGame.Entities.Components;
 using ChessGame.Entities.Pieces;
 using ChessGame.Enums;
+using ChessGame.UI;
 using Nez;
 namespace ChessGame.Scenes;
 
@@ -27,7 +28,9 @@ public class CGGameScene : Scene
         
         
         Screen.SetSize(660*2, 660*2);
-    
+
+        CreateEntity("game-ui").AddComponent<GameUI>();
+        
         // create our canvas and put it on the screen space render layer
         Canvas = CreateEntity("ui").AddComponent(new UICanvas());
         Canvas.IsFullScreen = true;
@@ -37,7 +40,8 @@ public class CGGameScene : Scene
 
         cbGenerator
             .LoadTextures()
-            .SetOffset(100);
+            .SetOffsetX(220)
+            .SetOffsetY(100);
 
         var board = cbGenerator.Generate(0.8f);
         var movementManager = new CGMovementManager(board);

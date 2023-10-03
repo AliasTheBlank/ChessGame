@@ -35,16 +35,14 @@ namespace ChessGame.UI
 
 
             _table.Add(new TextButton("Single Player", topButtonStyle)).SetFillX().SetMinHeight(50)
-               .GetElement<TextButton>().OnClicked += butt =>
-               {
+                .GetElement<TextButton>().OnClicked += butt =>
+            {
 
-                   TweenManager.StopAllTweens();
-                   Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
-                   Core.StartSceneTransition(new FadeTransition(() => new TempGameScene()));
-               };
+                TweenManager.StopAllTweens();
+                Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
+                Core.StartSceneTransition(new FadeTransition(() => new CGGameScene()));
+            };
             _table.Row().SetPadTop(20);
-
-
 
             _table.Add(new TextButton("Multi Player Offline", topButtonStyle)).SetFillX().SetMinHeight(50)
                .GetElement<TextButton>().OnClicked += butt =>

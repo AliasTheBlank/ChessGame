@@ -46,8 +46,8 @@ public class CGBoard
 
     #endregion
 
-    private int TileSpawnOffset { get; set; }
-
+    private int TileSpawnOffsetX { get; set; }
+    private int TileSpawnOffsetY { get; set; }
     private int TileSpacing { get; set; }
     
     public enum TileType
@@ -63,9 +63,15 @@ public class CGBoard
     
     
     
-    public CGBoard SetOffset(int offset)
+    public CGBoard SetOffsetX(int offset)
     {
-        TileSpawnOffset = offset;
+        TileSpawnOffsetX = offset;
+        return this;
+    }
+
+    public CGBoard SetOffsetY(int offset)
+    {
+        TileSpawnOffsetY = offset;
         return this;
     }
     
@@ -86,10 +92,10 @@ public class CGBoard
         
         for (int row = 0; row < size; row++)
         {
-            var tileXPosition = (x * row) + TileSpawnOffset;
+            var tileXPosition = (x * row) + TileSpawnOffsetX;
             for (int column = 0; column < size; column++)
             {
-                var tileYPosition = (y * column) + TileSpawnOffset;
+                var tileYPosition = (y * column) + TileSpawnOffsetY;
                 
                 var texture = (column + row) % 2 == 0 ? EvenTileTexture : OddTileTexture;
                 
