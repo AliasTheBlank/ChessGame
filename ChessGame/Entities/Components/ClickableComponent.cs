@@ -1,5 +1,5 @@
-﻿using System;
-using ChessGame.Entities.Board;
+﻿using ChessGame.Entities.Board;
+using ChessGame.Entities.Pieces;
 using Nez;
 
 namespace ChessGame.Entities.Components;
@@ -15,8 +15,13 @@ public class ClickableComponent : Component, IUpdatable
         {
             if (Input.LeftMouseButtonPressed)
             {
-                Console.WriteLine(((CGTile)Entity).BoardPosition);
+                CGMovementManager.ManageMovement((CGTile)Entity);
             }
+        }
+
+        else if (Input.RightMouseButtonPressed)
+        {
+            CGMovementManager.UnSelectTile(true);
         }
     }
 }

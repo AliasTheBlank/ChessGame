@@ -1,5 +1,8 @@
 using ChessGame.Actors;
 using ChessGame.Entities.Board;
+using ChessGame.Entities.Components;
+using ChessGame.Entities.Pieces;
+using ChessGame.Enums;
 using Nez;
 namespace ChessGame.Scenes;
 
@@ -33,10 +36,11 @@ public class CGGameScene : Scene
         var cbGenerator = new CGBoard(this);
 
         cbGenerator
-            .SetTexture(CGBoard.TileType.Even, @"Content/Sprites/WhiteTile.png")
-            .SetTexture(CGBoard.TileType.Odd, @"Content/Sprites/BlackTile.png")
-            .SetOffset(160)
-            .Generate();
+            .LoadTextures()
+            .SetOffset(100);
 
+        var board = cbGenerator.Generate(0.8f);
+        var movementManager = new CGMovementManager(board);
+        cbGenerator.PopulateBoard(board, 0.4f);
     }
 }
