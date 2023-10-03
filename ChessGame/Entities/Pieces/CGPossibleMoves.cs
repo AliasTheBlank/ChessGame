@@ -339,7 +339,8 @@ public class CGPossibleMoves
         if (positionX > 0 && IsOccupiedByEnemy(board[positionX - 1, positionY + movementDirection], team))
             list.Add(board[positionX - 1, positionY + movementDirection]);
         
-        list.Add(board[positionX, positionY + movementDirection]);
+        if (board[positionX, positionY + movementDirection].IsEmpty)
+            list.Add(board[positionX, positionY + movementDirection]);
         
         return list;
     }
