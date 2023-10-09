@@ -15,13 +15,17 @@ public class ClickableComponent : Component, IUpdatable
         {
             if (Input.LeftMouseButtonPressed)
             {
-                CGMovementManager.ManageMovement((CGTile)Entity);
+                var movementManager = CGMovementManager.GetInstance();
+                if (movementManager != null)
+                    movementManager.ManageMovement((CGTile)Entity);
             }
         }
 
         else if (Input.RightMouseButtonPressed)
         {
-            CGMovementManager.UnSelectTile(true);
+            var movementManager = CGMovementManager.GetInstance();
+            if (movementManager != null)
+                movementManager.ManageMovement((CGTile)Entity);
         }
     }
 }
