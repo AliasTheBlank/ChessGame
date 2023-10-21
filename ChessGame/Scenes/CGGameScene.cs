@@ -44,7 +44,7 @@ public class CGGameScene : Scene
             .SetOffsetY(100);
 
         var board = cbGenerator.Generate(0.8f);
-        var movementManager = new CGMovementManager(board);
+        var movementManager = CGMovementManager.GetInstance(board);
         cbGenerator.PopulateBoard(board, 0.4f);
     }
 }

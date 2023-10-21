@@ -8,20 +8,41 @@ namespace ChessGame.Entities.Pieces;
 
 public class CGMovementManager
 {
+    private static CGMovementManager _instMovementManager;
+    
     public static CGTile[,] Board;
 
-    private static bool _isTileFocus;
-    private static CGTile _selectedTile;
+    private bool _isTileFocus;
+    private CGTile _selectedTile;
 
-    private static List<CGTile> _possibleMoves;
+    private List<CGTile> _possibleMoves;
 
-    public CGMovementManager(CGTile[,] board)
+    private CGTeam _activePlayer;
+
+    private CGMovementManager(CGTile[,] board)
     {
         Board = board;
         _isTileFocus = false;
+        _activePlayer = CGTeam.White;
     }
 
-    public static void ManageMovement(CGTile clickTile)
+    public static CGMovementManager GetInstance(CGTile[,] board)
+    {
+        if (_instMovementManager == null)
+            _instMovementManager = new CGMovementManager(board);
+
+        return _instMovementManager;
+
+    }
+    
+    public static CGMovementManager GetInstance()
+    {
+        if (_instMovementManager != null)
+            return _instMovementManager;
+        return null;
+    }
+
+    public void ManageMovement(CGTile clickTile)
     {
         if (_isTileFocus)
         {
@@ -42,10 +63,11 @@ public class CGMovementManager
                 _selectedTile.CurrentPiece = null;
                 _isTileFocus = false;
                 _selectedTile = null;
+                _activePlayer = _activePlayer == CGTeam.White ? CGTeam.Black : CGTeam.White;
             }
         }
         
-        else
+        else if (!clickTile.IsEmpty && clickTile.CurrentPiece.Team == _activePlayer)
         {
             Console.WriteLine(clickTile.BoardPosition + " Was selected from movement manager");
             if (!clickTile.IsEmpty) {
@@ -56,7 +78,7 @@ public class CGMovementManager
         }
     }
 
-    public static void UnSelectTile(bool rightClick)
+    public void UnSelectTile(bool rightClick)
     {
         if (rightClick && _isTileFocus)
         {
