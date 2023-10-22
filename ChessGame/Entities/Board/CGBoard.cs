@@ -1,5 +1,6 @@
 ﻿using ChessGame.Entities.Board;
 using ChessGame.Entities.Pieces;
+using ChessGame.Entities.Sprites;
 using ChessGame.Enums;
 using ChessGame.Structs;
 using Microsoft.Xna.Framework;
@@ -11,41 +12,6 @@ namespace ChessGame.Actors;
 public class CGBoard
 {
     private Scene OwningScene { get; }
-
-    #region Textures
-
-    
-    /// <summary>
-    /// 
-    /// </summary>
-    private Texture2D OddTileTexture { get; set; }
-    
-    /// <summary>
-    /// 
-    /// </summary>
-    private Texture2D EvenTileTexture { get; set; }
-    
-    private Texture2D WhitePawnTexture { get; set; }
-    private Texture2D BlackPawnTexture { get; set; }
-
-    private Texture2D WhiteBishopTexture { get; set; }
-    private Texture2D BlackBishopTexture { get; set; }
-    
-    private Texture2D WhiteKnightTexture { get; set; }
-    private Texture2D BlackKnightTexture { get; set; }
-    
-    private Texture2D WhiteQueenTexture { get; set; }
-    private Texture2D BlackQueenTexture { get; set; }
-    
-    private Texture2D WhiteKingTexture { get; set; }
-    private Texture2D BlackKingTexture { get; set; }
-    
-    private Texture2D WhiteRookTexture { get; set; }
-    private Texture2D BlackRookTexture { get; set; }
-
-
-    #endregion
-
     private int TileSpawnOffsetX { get; set; }
     private int TileSpawnOffsetY { get; set; }
     private int TileSpacing { get; set; }
@@ -85,10 +51,15 @@ public class CGBoard
     // TODO: Change to return the tiles in the most convenient way
     public CGTile[,] Generate(float scale = 1,int size = 8)
     {
+        var texturesManager = CGTextureManager.GetInstance(OwningScene);
+        texturesManager.PieceScale = scale;
+        
+        var texture = texturesManager.TextureDictionary[CGPieceType.Board];
+        
         var board = new CGTile[size, size];
         
-        var y = (OddTileTexture.Height + TileSpacing) * scale;
-        var x = (OddTileTexture.Width + TileSpacing) * scale;
+        var y = (texture.BlackTexture.Height + TileSpacing) * scale;
+        var x = (texture.BlackTexture.Width + TileSpacing) * scale;
         
         for (int row = 0; row < size; row++)
         {
@@ -97,10 +68,10 @@ public class CGBoard
             {
                 var tileYPosition = (y * column) + TileSpawnOffsetY;
                 
-                var texture = (column + row) % 2 == 0 ? EvenTileTexture : OddTileTexture;
+                var tileTexture = (column + row) % 2 == 0 ? texture.WhiteTexture : texture.BlackTexture;
                 
                 BoardPosition boardPos = new((char)(row + 65), size - column);
-                var tile = OwningScene.AddEntity(new CGTile(boardPos, texture, scale));
+                var tile = OwningScene.AddEntity(new CGTile(boardPos, tileTexture, scale));
                 tile.Transform.SetPosition(new Vector2(tileXPosition, tileYPosition));
                 board[row, column] = tile;
             }
@@ -111,161 +82,43 @@ public class CGBoard
 
     public CGBoard PopulateBoard(CGTile[,] board, float scale)
     {
+        var texturesManager = CGTextureManager.GetInstance(OwningScene);
+        texturesManager.PieceScale = scale;
+        
+        var texture = texturesManager.TextureDictionary[CGPieceType.Pawn];
+        
         for (int i = 0; i < 8; i++)
         {
-            board[i, 1].CurrentPiece = OwningScene.AddEntity(new CGPawn(board[i, 1].Position, BlackPawnTexture, CGTeam.Black, scale));
-            board[i, 6].CurrentPiece = OwningScene.AddEntity(new CGPawn(board[i, 6].Position, WhitePawnTexture, CGTeam.White, scale));
+            board[i, 1].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[i, 1].Position, texture.GetTexture(CGTeam.Black), CGTeam.Black, scale, CGPieceType.Pawn));
+            board[i, 6].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[i, 6].Position, texture.GetTexture(CGTeam.White), CGTeam.White, scale, CGPieceType.Pawn));
         }
         
-        board[0, 0].CurrentPiece = OwningScene.AddEntity(new CGRook(board[0, 0].Position, BlackRookTexture, CGTeam.Black, scale));
-        board[7, 0].CurrentPiece = OwningScene.AddEntity(new CGRook(board[7, 0].Position, BlackRookTexture, CGTeam.Black, scale));
-        board[0, 7].CurrentPiece =  OwningScene.AddEntity(new CGRook(board[0, 7].Position, WhiteRookTexture, CGTeam.White, scale));
-        board[7, 7].CurrentPiece = OwningScene.AddEntity(new CGRook(board[7, 7].Position, WhiteRookTexture, CGTeam.White, scale));
+        texture = texturesManager.TextureDictionary[CGPieceType.Rook];
+        board[0, 0].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[0, 0].Position, texture.GetTexture(CGTeam.Black), CGTeam.Black, scale, CGPieceType.Rook));
+        board[7, 0].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[7, 0].Position, texture.GetTexture(CGTeam.Black), CGTeam.Black, scale, CGPieceType.Rook));
+        board[0, 7].CurrentPiece =  OwningScene.AddEntity(new CGPiece(board[0, 7].Position, texture.GetTexture(CGTeam.White), CGTeam.White, scale, CGPieceType.Rook));
+        board[7, 7].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[7, 7].Position, texture.GetTexture(CGTeam.White), CGTeam.White, scale, CGPieceType.Rook));
         
-        board[1, 0].CurrentPiece = OwningScene.AddEntity(new CGKnight(board[1, 0].Position, BlackKnightTexture, CGTeam.Black, scale));
-        board[6, 0].CurrentPiece = OwningScene.AddEntity(new CGKnight(board[6, 0].Position, BlackKnightTexture, CGTeam.Black, scale));
-        board[1, 7].CurrentPiece = OwningScene.AddEntity(new CGKnight(board[1, 7].Position, WhiteKnightTexture, CGTeam.White, scale));
-        board[6, 7].CurrentPiece = OwningScene.AddEntity(new CGKnight(board[6, 7].Position, WhiteKnightTexture, CGTeam.White, scale));
+        texture = texturesManager.TextureDictionary[CGPieceType.Knight];
+        board[1, 0].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[1, 0].Position, texture.GetTexture(CGTeam.Black), CGTeam.Black, scale, CGPieceType.Knight));
+        board[6, 0].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[6, 0].Position, texture.GetTexture(CGTeam.Black), CGTeam.Black, scale, CGPieceType.Knight));
+        board[1, 7].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[1, 7].Position, texture.GetTexture(CGTeam.White), CGTeam.White, scale, CGPieceType.Knight));
+        board[6, 7].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[6, 7].Position, texture.GetTexture(CGTeam.White), CGTeam.White, scale, CGPieceType.Knight));
         
-        board[2, 0].CurrentPiece = OwningScene.AddEntity(new CGBishop(board[2, 0].Position, BlackBishopTexture, CGTeam.Black, scale));
-        board[5, 0].CurrentPiece = OwningScene.AddEntity(new CGBishop(board[5, 0].Position, BlackBishopTexture, CGTeam.Black, scale));
-        board[2, 7].CurrentPiece = OwningScene.AddEntity(new CGBishop(board[2, 7].Position, WhiteBishopTexture, CGTeam.White, scale));
-        board[5, 7].CurrentPiece = OwningScene.AddEntity(new CGBishop(board[5, 7].Position, WhiteBishopTexture, CGTeam.White, scale));
+        texture = texturesManager.TextureDictionary[CGPieceType.Bishop];
+        board[2, 0].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[2, 0].Position, texture.GetTexture(CGTeam.Black), CGTeam.Black, scale,CGPieceType.Bishop));
+        board[5, 0].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[5, 0].Position, texture.GetTexture(CGTeam.Black), CGTeam.Black, scale, CGPieceType.Bishop));
+        board[2, 7].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[2, 7].Position, texture.GetTexture(CGTeam.White), CGTeam.White, scale, CGPieceType.Bishop));
+        board[5, 7].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[5, 7].Position, texture.GetTexture(CGTeam.White), CGTeam.White, scale, CGPieceType.Bishop));
         
-        board[3, 0].CurrentPiece = OwningScene.AddEntity(new CGQueen(board[3, 0].Position, BlackQueenTexture, CGTeam.Black, scale));
-        board[3, 7].CurrentPiece = OwningScene.AddEntity(new CGQueen(board[3, 7].Position, WhiteQueenTexture, CGTeam.White, scale));
+        texture = texturesManager.TextureDictionary[CGPieceType.Queen];
+        board[3, 0].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[3, 0].Position, texture.GetTexture(CGTeam.Black), CGTeam.Black, scale, CGPieceType.Queen));
+        board[3, 7].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[3, 7].Position, texture.GetTexture(CGTeam.White), CGTeam.White, scale, CGPieceType.Queen));
         
-        board[4, 0].CurrentPiece = OwningScene.AddEntity(new CGKing(board[4, 0].Position, BlackKingTexture, CGTeam.Black, scale));
-        board[4, 7].CurrentPiece = OwningScene.AddEntity(new CGKing(board[4, 7].Position, WhiteKingTexture, CGTeam.White, scale));
+        texture = texturesManager.TextureDictionary[CGPieceType.King];
+        board[4, 0].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[4, 0].Position, texture.GetTexture(CGTeam.Black), CGTeam.Black, scale, CGPieceType.King));
+        board[4, 7].CurrentPiece = OwningScene.AddEntity(new CGPiece(board[4, 7].Position, texture.GetTexture(CGTeam.White), CGTeam.White, scale, CGPieceType.King));
         
         return this;
     }
-
-    #region Texture setters
-
-    public CGBoard SetBoardTexture(TileType tileType, string texturePath)
-    {
-        switch (tileType)
-        {
-            case TileType.Odd:
-                OddTileTexture = OwningScene.Content.Load<Texture2D>(texturePath);
-                break;
-            case TileType.Even:
-                EvenTileTexture = OwningScene.Content.Load<Texture2D>(texturePath);
-                break;
-        }
-
-        return this;
-    }
-    public CGBoard SetPawnTexture(CGTeam team, string texturePath)
-    {
-        switch (team)
-        {
-            case CGTeam.White:
-                WhitePawnTexture = OwningScene.Content.Load<Texture2D>(texturePath);
-                break;
-            case CGTeam.Black:
-                BlackPawnTexture = OwningScene.Content.Load<Texture2D>(texturePath);
-                break;
-        }
-
-        return this;
-    }
-    
-    public CGBoard SetBishopTexture(CGTeam team, string texturePath)
-    {
-        switch (team)
-        {
-            case CGTeam.White:
-                WhiteBishopTexture = OwningScene.Content.Load<Texture2D>(texturePath);
-                break;
-            case CGTeam.Black:
-                BlackBishopTexture = OwningScene.Content.Load<Texture2D>(texturePath);
-                break;
-        }
-
-        return this;
-    }
-    
-    public CGBoard SetKnightTexture(CGTeam team, string texturePath)
-    {
-        switch (team)
-        {
-            case CGTeam.White:
-                WhiteKnightTexture = OwningScene.Content.Load<Texture2D>(texturePath);
-                break;
-            case CGTeam.Black:
-                BlackKnightTexture = OwningScene.Content.Load<Texture2D>(texturePath);
-                break;
-        }
-
-        return this;
-    }
-    
-    public CGBoard SetKingTexture(CGTeam team, string texturePath)
-    {
-        switch (team)
-        {
-            case CGTeam.White:
-                WhiteKingTexture = OwningScene.Content.Load<Texture2D>(texturePath);
-                break;
-            case CGTeam.Black:
-                BlackKingTexture = OwningScene.Content.Load<Texture2D>(texturePath);
-                break;
-        }
-
-        return this;
-    }
-    
-    public CGBoard SetQueenTexture(CGTeam team, string texturePath)
-    {
-        switch (team)
-        {
-            case CGTeam.White:
-                WhiteQueenTexture = OwningScene.Content.Load<Texture2D>(texturePath);
-                break;
-            case CGTeam.Black:
-                BlackQueenTexture = OwningScene.Content.Load<Texture2D>(texturePath);
-                break;
-        }
-
-        return this;
-    }
-    
-    public CGBoard SetRookTexture(CGTeam team, string texturePath)
-    {
-        switch (team)
-        {
-            case CGTeam.White:
-                WhiteRookTexture = OwningScene.Content.Load<Texture2D>(texturePath);
-                break;
-            case CGTeam.Black:
-                BlackRookTexture = OwningScene.Content.Load<Texture2D>(texturePath);
-                break;
-        }
-
-        return this;
-    }
-
-    public CGBoard LoadTextures()
-    {
-        
-        this.SetBoardTexture(CGBoard.TileType.Even, "../Content/Sprites/WhiteTile")
-            .SetBoardTexture(CGBoard.TileType.Odd, "../Content/Sprites/BlackTile")
-            .SetPawnTexture(CGTeam.White, "../Content/Sprites/chess-pawn-white")
-            .SetPawnTexture(CGTeam.Black, "../Content/Sprites/chess-pawn-black")
-            .SetBishopTexture(CGTeam.White, "../Content/Sprites/chess-bishop-white")
-            .SetBishopTexture(CGTeam.Black, "../Content/Sprites/chess-bishop-black")
-            .SetKingTexture(CGTeam.White, "../Content/Sprites/chess-king-white")
-            .SetKingTexture(CGTeam.Black, "../Content/Sprites/chess-king-black")
-            .SetQueenTexture(CGTeam.White, "../Content/Sprites/chess-queen-white")
-            .SetQueenTexture(CGTeam.Black, "../Content/Sprites/chess-queen-black")
-            .SetRookTexture(CGTeam.White, "../Content/Sprites/chess-rook-white")
-            .SetRookTexture(CGTeam.Black, "../Content/Sprites/chess-rook-black")
-            .SetKnightTexture(CGTeam.White, "../Content/Sprites/chess-knight-white")
-            .SetKnightTexture(CGTeam.Black, "../Content/Sprites/chess-knight-black");
-        return this;
-    }
-    
-    #endregion
 }

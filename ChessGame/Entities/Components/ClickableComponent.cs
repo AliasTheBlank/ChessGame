@@ -25,7 +25,7 @@ public class ClickableComponent : Component, IUpdatable
         {
             var movementManager = CGMovementManager.GetInstance();
             if (movementManager != null)
-                movementManager.ManageMovement((CGTile)Entity);
+                movementManager.UnSelectTile();
         }
     }
 }
