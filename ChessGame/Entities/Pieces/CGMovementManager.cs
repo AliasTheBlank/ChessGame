@@ -11,8 +11,6 @@ namespace ChessGame.Entities.Pieces;
 public class CGMovementManager
 {
     private static CGMovementManager _instMovementManager;
-    
-    public static CGTile[,] Board;
 
     private bool _isTileFocus;
     private CGTile _selectedTile;
@@ -22,6 +20,9 @@ public class CGMovementManager
     private CGTeam _activePlayer;
     private Scene _mainScene;
 
+    private bool _promotionInProgress;
+
+    public static CGTile[,] Board;
     private CGMovementManager(CGTile[,] board, Scene mainScene)
     {
         Board = board;
@@ -48,6 +49,8 @@ public class CGMovementManager
 
     public void ManageMovement(CGTile clickTile)
     {
+        if (_promotionInProgress)
+            return;
         //Console.WriteLine(clickTile.BoardPosition + " Was selected from movement manager");
         if (_isTileFocus)
         {
@@ -60,7 +63,6 @@ public class CGMovementManager
                     clickTile.CurrentPiece.Destroy();
 
                 clickTile.CurrentPiece = _selectedTile.CurrentPiece;
-
                 clickTile.CurrentPiece.Position = clickTile.Position;
                 clickTile.CurrentPiece.Moved = true;
 
@@ -69,7 +71,7 @@ public class CGMovementManager
                     if ((_activePlayer == CGTeam.White && clickTile.BoardPosition.GetRankValue() == 8)
                         || _activePlayer == CGTeam.Black && clickTile.BoardPosition.GetRankValue() == 1)
                     {
-                        
+                        _promotionInProgress = true;
                         _mainScene.CreateEntity("pawn-promotion").AddComponent<CGPawnPromotionUI>();
                         return;
                     }
@@ -107,6 +109,7 @@ public class CGMovementManager
         _isTileFocus = false;
         _selectedTile = null;
         _activePlayer = _activePlayer == CGTeam.White ? CGTeam.Black : CGTeam.White;
+        _promotionInProgress = false;
     }
 
     public void PromotePawn(CGPieceType type)
