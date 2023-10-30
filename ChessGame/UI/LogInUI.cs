@@ -29,14 +29,29 @@ public class LogInUI : UICanvas
 
         topButtonStyle.FontScale = 1.5f;
         
-        var _lblUserName = _table.Add(new Nez.UI.Label("Username"));
+        var lblTitle = new Nez.UI.Label("Welcome to our chess game");
+        lblTitle.SetFontScale(3);
+        _table.Add(lblTitle);
+        _table.Row().SetPadTop(20);
+        
+        var lblError = new Nez.UI.Label("");
+        lblError.SetFontScale(2.5f);
+        _table.Add(lblError);
+        _table.Row().SetPadTop(20);
+
+        var _lblUserName = new Nez.UI.Label("Username");
+        _lblUserName.SetFontScale(2f);
+        _table.Add(_lblUserName);
+        
         _table.Row().SetPadTop(20);
         
         var _userName = new TextField("Username", skin);
         _table.Add(_userName);
-        
         _table.Row().SetPadTop(20);
-        var _lblLastName = _table.Add(new Nez.UI.Label("LastName"));
+        
+        var _lblLastName = new Nez.UI.Label("LastName");
+        _lblLastName.SetFontScale(2f);
+        _table.Add(_lblLastName);
         _table.Row().SetPadTop(20);
 
         var _lastName = new TextField("LastName", skin);
@@ -47,7 +62,10 @@ public class LogInUI : UICanvas
             .GetElement<TextButton>().OnClicked += butt =>
         {
             if (!UtilityDB.ValidatePlayer(_userName.GetText(), _lastName.GetText()))
+            {
+                lblError.SetText("Invalid user or password");
                 return;
+            }
             
             TweenManager.StopAllTweens();
             Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);

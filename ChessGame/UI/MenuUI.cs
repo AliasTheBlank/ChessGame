@@ -60,10 +60,11 @@ namespace ChessGame.UI
                    //Go to scene
                };
             _table.Row().SetPadTop(20);
-            _table.Add(new TextButton("Multi Player WLAN", topButtonStyle)).SetFillX().SetMinHeight(50)
+            _table.Add(new TextButton("Log out", topButtonStyle)).SetFillX().SetMinHeight(50)
                .GetElement<TextButton>().OnClicked += butt =>
                {
                    //Go to scene
+                   Core.StartSceneTransition(new FadeTransition(() => new CGLogInScene()));
                };
             _table.Row().SetPadTop(20);
             _table.Add(new TextButton("Quit", topButtonStyle)).SetFillX().SetMinHeight(50)

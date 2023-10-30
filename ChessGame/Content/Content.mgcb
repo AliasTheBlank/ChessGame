@@ -13,6 +13,12 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Config.json
+/copy:Config.json
+
+#begin DBConfig.xml
+/copy:DBConfig.xml
+
 #begin Sprites/BlackTile.png
 /importer:TextureImporter
 /processor:TextureProcessor

@@ -1,14 +1,16 @@
 ﻿using System;
+using System.Drawing;
+using System.IO;
+using System.Xml;
+using Nez;
+using Nez.Persistence;
 using Npgsql;
 
 namespace ChessGame.DAL;
 
 public class UtilityDB
 {
-    private static string connectionString =
-        "Host=70.48.140.178:47020;Username=projectuser;Password=CodeMonkeys1;Database=ChessGameDB";
-
-
+    
     public static bool ValidatePlayer(string username, string password)
     {
         using var conn = GetConnection();
@@ -40,8 +42,15 @@ public class UtilityDB
 
     private static NpgsqlConnection GetConnection()
     {
-        using var dataSource = NpgsqlDataSource.Create(connectionString);
+        // add config to the game pipeline.
+        // load config and read content
+        
+        var jsonString = File.ReadAllText("Content/Config.json");
+        var MyConfig = Json.FromJson<DBConfig>(jsonString);
+        using var dataSource = NpgsqlDataSource.Create(MyConfig.ToString());
         
         return dataSource.OpenConnection();
     }
+
+
 }
