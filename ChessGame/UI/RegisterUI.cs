@@ -10,7 +10,7 @@ using Nez.UI;
 
 namespace ChessGame.UI;
 
-public class LogInUI : UICanvas
+public class RegisterUI : UICanvas
 {
     public override void OnAddedToEntity()
     {
@@ -39,46 +39,63 @@ public class LogInUI : UICanvas
         _table.Add(lblError);
         _table.Row().SetPadTop(20);
 
-        var _lblUserName = new Nez.UI.Label("Username");
-        _lblUserName.SetFontScale(2f);
-        _table.Add(_lblUserName);
+        var lblUserName = new Nez.UI.Label("Username");
+        lblUserName.SetFontScale(2f);
+        _table.Add(lblUserName);
         
         _table.Row().SetPadTop(20);
         
-        var _userName = new TextField("", skin);
-        _table.Add(_userName);
+        var userName = new TextField("", skin);
+        _table.Add(userName);
         _table.Row().SetPadTop(20);
         
-        var _lblPassword = new Nez.UI.Label("Password");
-        _lblPassword.SetFontScale(2f);
-        _table.Add(_lblPassword);
+        var lblPassword = new Nez.UI.Label("Password");
+        lblPassword.SetFontScale(2f);
+        _table.Add(lblPassword);
         _table.Row().SetPadTop(20);
 
-        var _password = new TextField("", skin);
-        _table.Add(_password);
+        var password = new TextField("", skin);
+        _table.Add(password);
+        _table.Row().SetPadTop(20);
+        
+        var lblConfirmPassword = new Nez.UI.Label("Confirm password");
+        lblConfirmPassword.SetFontScale(2f);
+        _table.Add(lblConfirmPassword);
         _table.Row().SetPadTop(20);
 
+        var confirmPassword = new TextField("", skin);
+        _table.Add(confirmPassword);
+        _table.Row().SetPadTop(20);
+
+        _table.Add(new TextButton("Register", topButtonStyle)).SetFillX().SetMinHeight(50)
+            .GetElement<TextButton>().OnClicked += butt =>
+        {
+            if (UtilityDB.UserExist(userName.GetText()))
+            {
+                lblError.SetText("User already exist");
+                return;
+            }
+
+            if (password.GetText() != confirmPassword.GetText())
+            {
+                lblError.SetText("Password doesn't match");
+                return;
+            }
+
+            UtilityDB.CreateUser(userName.GetText(), password.GetText());
+            lblError.SetText("User successfully created");
+            userName.SetText("");
+            password.SetText("");
+            confirmPassword.SetText("");
+        };
+
+        _table.Row().SetPadTop(20);
         _table.Add(new TextButton("Log in", topButtonStyle)).SetFillX().SetMinHeight(50)
             .GetElement<TextButton>().OnClicked += butt =>
         {
-            if (!UtilityDB.ValidatePlayer(_userName.GetText(), _password.GetText()))
-            {
-                lblError.SetText("Invalid user or password");
-                return;
-            }
-            
             TweenManager.StopAllTweens();
             Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
-            Core.StartSceneTransition(new FadeTransition(() => new MenuScene()));
-        };
-        _table.Row().SetPadTop(20);
-        _table.Add(new TextButton("Sign up", topButtonStyle)).SetFillX().SetMinHeight(50)
-            .GetElement<TextButton>().OnClicked += butt =>
-        {
-            
-            TweenManager.StopAllTweens();
-            Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
-            Core.StartSceneTransition(new FadeTransition(() => new CGRegisterScene()));
+            Core.StartSceneTransition(new FadeTransition(() => new CGLogInScene()));
         };
     }
 }

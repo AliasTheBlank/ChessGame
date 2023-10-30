@@ -4,6 +4,7 @@ using System.IO;
 using System.Xml;
 using Nez;
 using Nez.Persistence;
+using Nez.UI;
 using Npgsql;
 
 namespace ChessGame.DAL;
@@ -39,6 +40,34 @@ public class UtilityDB
         conn.Close();
         return false;
     }
+    
+    public static bool UserExist(string username)
+    {
+        using var conn = GetConnection();
+        using var cmd =
+            new NpgsqlCommand("Select Count(*) from players where Username = (@pUsername)", conn)
+            {
+                Parameters =
+                {
+                    new("@pUsername", username)
+                }
+            };
+
+        using (var reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                if (Convert.ToInt32(reader["count"].ToString()) == 1)
+                {
+                    conn.Close();
+                    return true;
+                } 
+            }
+        }
+        
+        conn.Close();
+        return false;
+    }
 
     private static NpgsqlConnection GetConnection()
     {
@@ -53,4 +82,21 @@ public class UtilityDB
     }
 
 
+    public static void CreateUser(string userName, string password)
+    {
+        using var conn = GetConnection();
+        using var cmd =
+            new NpgsqlCommand("Insert into players values (@pUsername , @pPassword, 0)", conn)
+            {
+                Parameters =
+                {
+                    new("@pUsername", userName),
+                    new("@pPassword", password)
+                }
+            };
+
+        cmd.ExecuteNonQuery();
+        
+        conn.Close();
+    }
 }
