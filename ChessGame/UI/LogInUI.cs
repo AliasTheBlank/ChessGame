@@ -39,29 +39,29 @@ public class LogInUI : UICanvas
         _table.Add(lblError);
         _table.Row().SetPadTop(20);
 
-        var _lblUserName = new Nez.UI.Label("Username");
-        _lblUserName.SetFontScale(2f);
-        _table.Add(_lblUserName);
+        var lblUserName = new Nez.UI.Label("Username");
+        lblUserName.SetFontScale(2f);
+        _table.Add(lblUserName);
         
         _table.Row().SetPadTop(20);
         
-        var _userName = new TextField("", skin);
-        _table.Add(_userName);
+        var userName = new TextField("", skin);
+        _table.Add(userName);
         _table.Row().SetPadTop(20);
         
-        var _lblPassword = new Nez.UI.Label("Password");
-        _lblPassword.SetFontScale(2f);
-        _table.Add(_lblPassword);
+        var lblPassword = new Nez.UI.Label("Password");
+        lblPassword.SetFontScale(2f);
+        _table.Add(lblPassword);
         _table.Row().SetPadTop(20);
 
-        var _password = new TextField("", skin);
-        _table.Add(_password);
+        var password = new TextField("", skin);
+        _table.Add(password);
         _table.Row().SetPadTop(20);
 
         _table.Add(new TextButton("Log in", topButtonStyle)).SetFillX().SetMinHeight(50)
             .GetElement<TextButton>().OnClicked += butt =>
         {
-            if (!UtilityDB.ValidatePlayer(_userName.GetText(), _password.GetText()))
+            if (!UtilityDB.ValidatePlayer(userName.GetText(), password.GetText()))
             {
                 lblError.SetText("Invalid user or password");
                 return;
