@@ -12,6 +12,47 @@ namespace ChessGame.UI
 {
     public  class GameUI : UICanvas
     {
+        private Label timeLabel;
+        private DateTime curr_time;
+        private DateTime old_time;
+        private int delta;
+
+
+        public override void Update()
+        {
+
+            curr_time = DateTime.Now;
+
+            delta = Convert.ToInt32((curr_time - old_time).TotalSeconds);
+
+            timeLabel.SetText("Timer: "+delta.ToString());
+            base.Update();
+
+        }
+
+
+
+       /* public override void OnAddedToEntity()
+        {
+            base.OnAddedToEntity();
+
+            var table = Stage.AddElement(new Table());
+            table.SetFillParent(true).Top().Center();
+            var lblStyle = new LabelStyle(Color.White);
+            lblStyle.FontScale = 1.5f;
+            lblStyle.Background = new PrimitiveDrawable(Color.Black);
+
+            delta = 0;
+            old_time = DateTime.Now;
+            curr_time = DateTime.Now;
+
+            timeLabel = new Label(delta.ToString(), lblStyle);
+
+            table.Add(timeLabel.SetStyle(lblStyle)).SetMinWidth(120).SetMinHeight(30).SetPadLeft(12);
+
+
+
+        }*/
         public override void OnAddedToEntity()
         {
             base.OnAddedToEntity();
@@ -66,8 +107,17 @@ namespace ChessGame.UI
 
             _table.Add(turnIndicator).SetMinWidth(120).SetMinHeight(30).SetPadLeft(12);
 
-            Label timer = new Label("Timer _", lblStyle); 
-            _table.Add(timer).SetMinWidth(120).SetMinHeight(30).SetPadLeft(12);
+
+
+            delta = 0;
+            old_time = DateTime.Now;
+            curr_time = DateTime.Now;
+
+            timeLabel = new Label("Timer: "+delta.ToString(), lblStyle);
+
+            
+            
+            _table.Add(timeLabel).SetMinWidth(120).SetMinHeight(30).SetPadLeft(12);
 
 
             _table.Row().SetPadBottom(10);

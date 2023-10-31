@@ -30,7 +30,7 @@ public class CGGameScene : Scene
         Screen.SetSize(660*2, 660*2);
 
         CreateEntity("game-ui").AddComponent<GameUI>();
-        CreateEntity("timer-ui").AddComponent<TimerUI>();
+        //CreateEntity("timer-ui").AddComponent<TimerUI>();
         // create our canvas and put it on the screen space render layer
         Canvas = CreateEntity("ui").AddComponent(new UICanvas());
         Canvas.IsFullScreen = true;
