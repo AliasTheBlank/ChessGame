@@ -23,5 +23,15 @@ public readonly record struct BoardPosition
         RankValue = RankFile[1];
     }
 
+    public int GetRankValue()
+    {
+        return RankValue; 
+    }
+    
+    public char GetFileName()
+    {
+        return FileName; 
+    }
+
     public override string ToString() => $"{FileName}{RankValue}";
 } 
