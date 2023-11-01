@@ -30,29 +30,6 @@ namespace ChessGame.UI
 
         }
 
-
-
-       /* public override void OnAddedToEntity()
-        {
-            base.OnAddedToEntity();
-
-            var table = Stage.AddElement(new Table());
-            table.SetFillParent(true).Top().Center();
-            var lblStyle = new LabelStyle(Color.White);
-            lblStyle.FontScale = 1.5f;
-            lblStyle.Background = new PrimitiveDrawable(Color.Black);
-
-            delta = 0;
-            old_time = DateTime.Now;
-            curr_time = DateTime.Now;
-
-            timeLabel = new Label(delta.ToString(), lblStyle);
-
-            table.Add(timeLabel.SetStyle(lblStyle)).SetMinWidth(120).SetMinHeight(30).SetPadLeft(12);
-
-
-
-        }*/
         public override void OnAddedToEntity()
         {
             base.OnAddedToEntity();
