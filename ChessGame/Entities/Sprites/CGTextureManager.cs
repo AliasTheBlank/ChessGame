@@ -40,8 +40,7 @@ public class CGTextureManager
 
     public static CGTextureManager GetInstance(Scene scene)
     {
-        if (_inst == null)
-            _inst = new CGTextureManager(scene);
+        _inst = new CGTextureManager(scene);
 
         return _inst;
     }
