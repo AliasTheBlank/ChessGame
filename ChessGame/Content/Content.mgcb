@@ -13,6 +13,9 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Config.json
+/copy:Config.json
+
 #begin Sprites/BlackTile.png
 /importer:TextureImporter
 /processor:TextureProcessor

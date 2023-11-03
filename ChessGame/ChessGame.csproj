@@ -12,8 +12,14 @@
         <ApplicationIcon>Icon.ico</ApplicationIcon>
     </PropertyGroup>
     <ItemGroup>
+        <PackageReference Include="MonoGame-Textbox" Version="1.0.2.1">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="MonoGame.Framework.Content.Pipeline" Version="3.8.1.303" />
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.0.1641" />
         <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
+        <PackageReference Include="Npgsql" Version="8.0.0-rc.2" />
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Nez-master\Nez.FarseerPhysics\Nez.MG38.FarseerPhysics.csproj" />
@@ -30,6 +36,9 @@
             <Link>Content/nez/textures/%(RecursiveDir)%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
+    </ItemGroup>
+    <ItemGroup>
+      <Folder Include="UI\Components\" />
     </ItemGroup>
     <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
         <Message Text="Restoring dotnet tools" Importance="High" />
