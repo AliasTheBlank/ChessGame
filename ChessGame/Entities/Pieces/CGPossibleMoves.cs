@@ -7,7 +7,7 @@ namespace ChessGame.Entities.Pieces;
 
 public class CGPossibleMoves
 {
-        #region Rook movement
+    #region Rook movement
     
     /// <summary>
     ///  Calculate the movements that a rook or queen can do vertically up, when calling it for the first time
@@ -138,7 +138,6 @@ public class CGPossibleMoves
     #endregion
 
     #region Knight Movement
-
     /// <summary>
     /// This method calculates the possible movement that knight might commit in a game
     /// </summary>
@@ -189,7 +188,7 @@ public class CGPossibleMoves
 
         return list;
     }
-
+    
     #endregion
 
     private static bool CanAddTile(CGTile tile, CGTeam team)
@@ -198,7 +197,6 @@ public class CGPossibleMoves
     }
     
     #region bishop moves
-
     /// <summary>
     /// 
     /// </summary>
@@ -381,6 +379,40 @@ public class CGPossibleMoves
             list.Add(board[positionX + 1, positionY + 1]);
         
         return list;
+    }
+
+    public static List<CGTile> GetCastleMoves(CGTile selectedTile, CGTeam team, CGTile[,] board)
+    {
+        var availableTiles = new List<CGTile>();
+
+        int file = selectedTile.BoardPosition.GetFileName() - 65;
+        int rank = 8 -selectedTile.BoardPosition.GetRankValue();
+        for (int i = file - 1; i >= 0; i--)
+        {
+            
+            if (i != 0 && !board[i, rank].IsEmpty)
+                break;
+
+            if (i == 0 && !board[i, rank].IsEmpty && !board[i, rank].CurrentPiece.Moved &&
+                board[i, rank].CurrentPiece.Type == CGPieceType.Rook)
+            {
+                availableTiles.Add(board[i, rank]);
+            }
+        }
+
+        for (int i = file + 1; i <= board.GetLength(0) - 1; i++)
+        {
+            if (i != board.GetLength(0) - 1  && !board[i, rank].IsEmpty)
+                break;
+
+            if (i == board.GetLength(0) - 1 && !board[i, rank].IsEmpty && !board[i, rank].CurrentPiece.Moved &&
+                board[i, rank].CurrentPiece.Type == CGPieceType.Rook)
+            {
+                availableTiles.Add(board[i, rank]);
+            }
+        }
+
+        return availableTiles;
     }
 
     public static List<CGTile> GetRookMoves(CGTile selectedTile, CGTeam team, CGTile[,] board)

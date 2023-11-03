@@ -16,6 +16,7 @@ public class CGMovementManager
     private CGTile _selectedTile;
 
     private List<CGTile> _possibleMoves;
+    private List<CGTile> _possibleCastleOptions;
 
     private CGTeam _activePlayer;
     private Scene _mainScene;
@@ -51,20 +52,14 @@ public class CGMovementManager
     {
         if (_promotionInProgress)
             return;
-        //Console.WriteLine(clickTile.BoardPosition + " Was selected from movement manager");
         if (_isTileFocus)
         {
-            //Console.Write(clickTile.BoardPosition + " second tile was selected from movement manager");
-
             if (_possibleMoves.Contains(clickTile))
             {
-                //Console.WriteLine(clickTile.BoardPosition + " is was move");
                 if (!clickTile.IsEmpty)
                     clickTile.CurrentPiece.Destroy();
 
-                clickTile.CurrentPiece = _selectedTile.CurrentPiece;
-                clickTile.CurrentPiece.Position = clickTile.Position;
-                clickTile.CurrentPiece.Moved = true;
+                MovePiece(_selectedTile, clickTile);
 
                 if (clickTile.CurrentPiece.Type == CGPieceType.Pawn)
                 {
@@ -75,19 +70,46 @@ public class CGMovementManager
                         _mainScene.CreateEntity("pawn-promotion").AddComponent<CGPawnPromotionUI>();
                         return;
                     }
-                    
                 }
+                SwitchTurn();
+            }
+            else if (_selectedTile.CurrentPiece.Type == CGPieceType.King && _possibleCastleOptions.Contains(clickTile))
+            {
+                int file = clickTile.BoardPosition.GetFileName() - 65;
+                int rank = 8 - clickTile.BoardPosition.GetRankValue();
+
+                CGTile tileToMove;
+                if (file == 0)
+                {
+                    tileToMove = Board[1, rank];
+                }
+                else
+                {
+                    tileToMove = Board[file - 1, rank];
+                }
+
+                MovePiece(clickTile, tileToMove);
+                MovePiece(_selectedTile, clickTile);
                 SwitchTurn();
             }
         }
         
         else if (!clickTile.IsEmpty && clickTile.CurrentPiece.Team == _activePlayer)
         {
-            //Console.WriteLine(clickTile.BoardPosition + " Was selected from movement manager");
             if (!clickTile.IsEmpty) {
                 _isTileFocus = true;
                 _selectedTile = clickTile;
                 _possibleMoves = _selectedTile.CurrentPiece.GetMoves(_selectedTile, _selectedTile.CurrentPiece.Team, Board);
+
+                if (clickTile.CurrentPiece.Type == CGPieceType.King)
+                {
+                    _possibleCastleOptions =
+                        CGPossibleMoves.GetCastleMoves(_selectedTile, _selectedTile.CurrentPiece.Team, Board);
+                    foreach (var VARIABLE in _possibleCastleOptions)
+                    {
+                        Console.WriteLine(VARIABLE.BoardPosition);
+                    }
+                }
             }
         }
     }
@@ -96,7 +118,6 @@ public class CGMovementManager
     {
         if (_isTileFocus)
         {
-            Console.WriteLine( _selectedTile.BoardPosition + " Was unselected from movement manager no specific tile");
             _isTileFocus = false;
             _selectedTile = null;
         }
@@ -110,6 +131,7 @@ public class CGMovementManager
         _selectedTile = null;
         _activePlayer = _activePlayer == CGTeam.White ? CGTeam.Black : CGTeam.White;
         _promotionInProgress = false;
+        _possibleCastleOptions = null;
     }
 
     public void PromotePawn(CGPieceType type)
@@ -120,14 +142,19 @@ public class CGMovementManager
             throw new Exception("Dictionary shouldn't be empty");
         }
 
-
         _selectedTile.CurrentPiece.SetUpPiece(type, textures.GetTexture(_selectedTile.CurrentPiece.Team));
-
 
         var promotionUI = _mainScene.FindEntity("pawn-promotion");
         
         promotionUI.Destroy();
         
         SwitchTurn();
+    }
+
+    private void MovePiece(CGTile start, CGTile end)
+    {
+        end.CurrentPiece = start.CurrentPiece;
+        end.CurrentPiece.Position = end.Position;
+        end.CurrentPiece.Moved = true;
     }
 }
