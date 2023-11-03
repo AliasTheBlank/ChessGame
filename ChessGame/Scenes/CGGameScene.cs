@@ -26,12 +26,9 @@ public class CGGameScene : Scene
         int row = 1;
         TileBoard = new CGTile[8, 8];
         
-        
         Screen.SetSize(660*2, 660*2);
 
         CreateEntity("game-ui").AddComponent<GameUI>();
-        
-        // create our canvas and put it on the screen space render layer
         Canvas = CreateEntity("ui").AddComponent(new UICanvas());
         Canvas.IsFullScreen = true;
         Canvas.RenderLayer = ScreenSpaceRenderLayer;

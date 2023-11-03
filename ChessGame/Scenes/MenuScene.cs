@@ -18,7 +18,6 @@ namespace ChessGame.Scenes
             CreateEntity("menu-ui").AddComponent<MenuUI>();
         }
 
-
         public MenuScene(){}
 
 
