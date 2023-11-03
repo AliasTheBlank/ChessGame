@@ -78,17 +78,21 @@ public class CGMovementManager
                 int file = clickTile.BoardPosition.GetFileName() - 65;
                 int rank = 8 - clickTile.BoardPosition.GetRankValue();
 
-                CGTile tileToMove;
-                if (file == 0)
+                CGTile rookStartTile;
+                CGTile rookEndTile;
+                // Long castle case
+                if (file == 2)
                 {
-                    tileToMove = Board[1, rank];
+                    rookStartTile = Board[0, rank];
+                    rookEndTile = Board[3, rank];
                 }
                 else
                 {
-                    tileToMove = Board[file - 1, rank];
+                    rookStartTile = Board[7, rank];
+                    rookEndTile = Board[5, rank];
                 }
 
-                MovePiece(clickTile, tileToMove);
+                MovePiece(rookStartTile, rookEndTile);
                 MovePiece(_selectedTile, clickTile);
                 SwitchTurn();
             }

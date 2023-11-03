@@ -396,7 +396,7 @@ public class CGPossibleMoves
             if (i == 0 && !board[i, rank].IsEmpty && !board[i, rank].CurrentPiece.Moved &&
                 board[i, rank].CurrentPiece.Type == CGPieceType.Rook)
             {
-                availableTiles.Add(board[i, rank]);
+                availableTiles.Add(board[file - 2, rank]);
             }
         }
 
@@ -408,7 +408,7 @@ public class CGPossibleMoves
             if (i == board.GetLength(0) - 1 && !board[i, rank].IsEmpty && !board[i, rank].CurrentPiece.Moved &&
                 board[i, rank].CurrentPiece.Type == CGPieceType.Rook)
             {
-                availableTiles.Add(board[i, rank]);
+                availableTiles.Add(board[file + 2, rank]);
             }
         }
 
