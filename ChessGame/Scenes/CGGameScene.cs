@@ -26,12 +26,9 @@ public class CGGameScene : Scene
         int row = 1;
         TileBoard = new CGTile[8, 8];
         
-        
         Screen.SetSize(660*2, 660*2);
 
         CreateEntity("game-ui").AddComponent<GameUI>();
-        
-        // create our canvas and put it on the screen space render layer
         Canvas = CreateEntity("ui").AddComponent(new UICanvas());
         Canvas.IsFullScreen = true;
         Canvas.RenderLayer = ScreenSpaceRenderLayer;
@@ -39,12 +36,11 @@ public class CGGameScene : Scene
         var cbGenerator = new CGBoard(this);
 
         cbGenerator
-            .LoadTextures()
             .SetOffsetX(220)
             .SetOffsetY(100);
 
         var board = cbGenerator.Generate(0.8f);
-        var movementManager = new CGMovementManager(board);
+        var movementManager = CGMovementManager.GetInstance(board, this);
         cbGenerator.PopulateBoard(board, 0.4f);
     }
 }

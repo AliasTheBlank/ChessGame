@@ -12,9 +12,6 @@ namespace ChessGame.UI
     public class MenuUI : UICanvas
     {
 
-
-
-
         public override void OnAddedToEntity()
         {
             base.OnAddedToEntity();
@@ -30,9 +27,6 @@ namespace ChessGame.UI
             };
 
             topButtonStyle.FontScale = 1.5f;
-
-
-
 
             _table.Add(new TextButton("Single Player", topButtonStyle)).SetFillX().SetMinHeight(50)
                 .GetElement<TextButton>().OnClicked += butt =>
@@ -51,7 +45,7 @@ namespace ChessGame.UI
 
                    TweenManager.StopAllTweens();
                    Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
-                   Core.StartSceneTransition(new FadeTransition(() => new TempGameScene()));
+                   
                };
             _table.Row().SetPadTop(20);
             _table.Add(new TextButton("Multi Player LAN", topButtonStyle)).SetFillX().SetMinHeight(50)
@@ -60,10 +54,11 @@ namespace ChessGame.UI
                    //Go to scene
                };
             _table.Row().SetPadTop(20);
-            _table.Add(new TextButton("Multi Player WLAN", topButtonStyle)).SetFillX().SetMinHeight(50)
+            _table.Add(new TextButton("Log out", topButtonStyle)).SetFillX().SetMinHeight(50)
                .GetElement<TextButton>().OnClicked += butt =>
                {
                    //Go to scene
+                   Core.StartSceneTransition(new FadeTransition(() => new CGLogInScene()));
                };
             _table.Row().SetPadTop(20);
             _table.Add(new TextButton("Quit", topButtonStyle)).SetFillX().SetMinHeight(50)
