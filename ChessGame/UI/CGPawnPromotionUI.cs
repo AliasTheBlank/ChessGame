@@ -28,14 +28,14 @@ public class CGPawnPromotionUI : UICanvas
             .GetElement<TextButton>().OnClicked += butt =>
         {
             momvementManager.PromotePawn(CGPieceType.Bishop);
-            momvementManager.MoveRecords += "B ";
+            momvementManager.MoveRecords += EnumHelper.GetDescription(CGPieceType.Bishop);
         };
         
         _table.Add(new TextButton("Knight", topButtonStyle)).SetFillX().SetMinHeight(50)
             .GetElement<TextButton>().OnClicked += butt =>
         {
             momvementManager.PromotePawn(CGPieceType.Knight);
-            momvementManager.MoveRecords += "N ";
+            momvementManager.MoveRecords += EnumHelper.GetDescription(CGPieceType.Knight);
 
         };
         
@@ -43,7 +43,7 @@ public class CGPawnPromotionUI : UICanvas
             .GetElement<TextButton>().OnClicked += butt =>
         {
             momvementManager.PromotePawn(CGPieceType.Rook);
-            momvementManager.MoveRecords += "R ";
+            momvementManager.MoveRecords += EnumHelper.GetDescription(CGPieceType.Rook);
 
         };
         
@@ -51,7 +51,7 @@ public class CGPawnPromotionUI : UICanvas
             .GetElement<TextButton>().OnClicked += butt =>
         {
             momvementManager.PromotePawn(CGPieceType.Queen);
-            momvementManager.MoveRecords += "Q ";
+            momvementManager.MoveRecords += EnumHelper.GetDescription(CGPieceType.Queen);
 
 
         };

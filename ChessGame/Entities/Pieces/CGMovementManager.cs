@@ -25,7 +25,7 @@ public class CGMovementManager
     private bool _promotionInProgress;
 
     public static CGTile[,] Board;
-    public static int NumOfMove=1;
+    public static int NumOfMove=0;
     public string MoveRecords = NumOfMove + ".";
 
 
@@ -76,7 +76,8 @@ public class CGMovementManager
                     {
                         _promotionInProgress = true;
                         _mainScene.CreateEntity("pawn-promotion").AddComponent<CGPawnPromotionUI>();
-                        MoveRecords += char.ToLowerInvariant(clickTile.BoardPosition.GetFileName()) + clickTile.BoardPosition.GetRankValue() + "=";
+                        // char fname = char.ToLowerInvariant(clickTile.BoardPosition.GetFileName()).ToString() + clickTile.BoardPosition.GetRankValue().ToString() + ;
+                        MoveRecords += "=";
                         return;
                     }
                 }
@@ -154,11 +155,7 @@ public class CGMovementManager
         _promotionInProgress = false;
         _possibleCastleOptions = null;
 
-        if(_activePlayer == CGTeam.White)
-        {
-            NumOfMove++;
-            MoveRecords += NumOfMove + ".";
-        }
+      
     }
 
     public void PromotePawn(CGPieceType type)
@@ -182,6 +179,15 @@ public class CGMovementManager
 
     private void MovePiece(CGTile start, CGTile end)
     {
+        if (_activePlayer == CGTeam.White)
+        {
+            NumOfMove++;
+            MoveRecords += " "+NumOfMove + ".";
+        }
+        else
+        {
+            MoveRecords += " ";
+        }
         char? iscapture = null;
         if (end.CurrentPiece != null)
         {
@@ -189,7 +195,7 @@ public class CGMovementManager
         }
 
         //TODO: Add check to notation
-        MoveRecords +=  EnumHelper.GetDescription(start.CurrentPiece.Type) +iscapture+ char.ToLowerInvariant(end.BoardPosition.GetFileName()) + end.BoardPosition.GetRankValue() + " ";
+        MoveRecords +=  EnumHelper.GetDescription(start.CurrentPiece.Type) +iscapture+ char.ToLowerInvariant(end.BoardPosition.GetFileName()) + end.BoardPosition.GetRankValue();
         end.CurrentPiece = start.CurrentPiece;
         end.CurrentPiece.Position = end.Position;
         end.CurrentPiece.Moved = true;
