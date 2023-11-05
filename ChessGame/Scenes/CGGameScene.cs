@@ -36,11 +36,16 @@ public class CGGameScene : Scene
         var cbGenerator = new CGBoard(this);
 
         cbGenerator
-            .SetOffsetX(220)
-            .SetOffsetY(100);
+            .SetOffsetX(300)
+            .SetOffsetY(140);
 
         var board = cbGenerator.Generate(0.8f);
         var movementManager = CGMovementManager.GetInstance(board, this);
+
+
+        string cGTeam = movementManager.GetPlayer();
+
+
         cbGenerator.PopulateBoard(board, 0.4f);
     }
 }
