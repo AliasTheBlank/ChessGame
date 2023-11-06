@@ -1,14 +1,6 @@
 ﻿{
-<<<<<<< HEAD
-  "Host": "70.48.140.178:47020",
-  "Username": "projectuser",
-  "Password": "CodeMonkeys1",
+  "Host": "",
+  "Username": "",
+  "Password": "",
   "Database": "ChessGameDB"
-
-=======
-  "Host" : "",
-  "Username" : "",
-  "Password" : "",
-  "Database" : "ChessGameDB"
->>>>>>> 5d5fc7c8fc73ec657e1c3e8c99cecc82e71a0058
 }
