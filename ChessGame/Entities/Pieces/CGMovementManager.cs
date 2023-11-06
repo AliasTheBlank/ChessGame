@@ -20,6 +20,7 @@ public class CGMovementManager
     private List<CGTile> _possibleCastleOptions;
 
     private CGTeam _activePlayer;
+    private CGTeam _inactivePlayer;
     private Scene _mainScene;
 
     private bool _promotionInProgress;
@@ -34,6 +35,7 @@ public class CGMovementManager
         Board = board;
         _isTileFocus = false;
         _activePlayer = CGTeam.White;
+        _inactivePlayer = CGTeam.Black;
         _mainScene = mainScene;
     }
     public string GetPlayer()
@@ -81,10 +83,11 @@ public class CGMovementManager
 
                         //test for check
 
-                        GameStateCheck(_selectedTile);
+                       
                         return;
                     }
                 }
+
                 SwitchTurn();
             }
             //castle
@@ -152,15 +155,18 @@ public class CGMovementManager
 
     public void SwitchTurn()
     {
+
         _possibleMoves = null;
         _selectedTile.CurrentPiece = null;
         _isTileFocus = false;
         _selectedTile = null;
+        _inactivePlayer = _activePlayer;
         _activePlayer = _activePlayer == CGTeam.White ? CGTeam.Black : CGTeam.White;
         _promotionInProgress = false;
         _possibleCastleOptions = null;
 
-      
+        if (GameStateCanCheckOpportnent(_inactivePlayer,Board))
+            GameStateCanCheckMateOpponent(_inactivePlayer);
     }
 
     public void PromotePawn(CGPieceType type)
@@ -199,9 +205,7 @@ public class CGMovementManager
             isCaptured = 'x' ;
         }
 
-        
-
-        //TODO: Add check to notation
+        //TODO: Add checkmate to notation
         MoveRecords +=  EnumHelper.GetDescription(start.CurrentPiece.Type) + isCaptured + char.ToLowerInvariant(end.BoardPosition.GetFileName()) + end.BoardPosition.GetRankValue();
         end.CurrentPiece = start.CurrentPiece;
         end.CurrentPiece.Position = end.Position;
@@ -209,31 +213,122 @@ public class CGMovementManager
        
     }
     #region working check
-
-    public void GameStateCheck(CGTile currPiece)
+    private CGTile FindOpportnentKing(CGTeam team)
     {
-        _possibleMoves = currPiece.CurrentPiece.GetMoves(currPiece, currPiece.CurrentPiece.Team, Board);
-
-        bool res = false;
-        foreach (var move in _possibleMoves)
+        CGTile oppKing = null;
+        foreach (var p in Board)
         {
-            if (move.CurrentPiece == null) continue;
-
-            if (move.CurrentPiece.Type == CGPieceType.King && move.CurrentPiece.Team != currPiece.CurrentPiece.Team)
+            if(p.CurrentPiece==null) continue;
+            if (p.CurrentPiece.Team == team) continue;
+            //find oppornent king
+            if (p.CurrentPiece.Type == CGPieceType.King)
             {
-
-                res = true;
-                MoveRecords += "+";
+                oppKing = p;
                 break;
+            }
+
+        }
+        return oppKing;
+    }
+    private bool GameStateCanCheckOpportnent(CGTeam team, CGTile[,] board)
+    {
+        CGTile oppKing = FindOpportnentKing(team);
+
+        foreach (var piece in board)
+        {
+            if (piece.CurrentPiece == null) continue;
+            if (piece.CurrentPiece.Team != team) continue;
+
+            if (CanCaptureTile(piece,oppKing))
+            {
+                MoveRecords += "+";                
+                return true;
+            }
+
+        }
+        return false;
+    }
+    public void GameStateCanCheckMateOpponent(CGTeam team)
+    {
+
+
+        CGTile oppKing = FindOpportnentKing(team);
+        //find oppornent king moves
+        List<CGTile> kingMoves = oppKing.CurrentPiece.GetMoves(oppKing, oppKing.CurrentPiece.Team, Board);
+
+        bool IsCheck = false;
+
+        bool[] movesInCheck = new bool[kingMoves.Count];
+
+        Array.Fill(movesInCheck, IsCheck);
+
+        //Check Mate part
+        //check each potential move if they can check the king potential moves
+        //foreach (var moveK in kingMoves)
+
+        CGTile[,] replicatedBoard = Board;
+
+        for(int i = 0; i < kingMoves.Count; i++)
+        {
+
+            //move king to potential move in the replicated board
+
+
+
+            kingMoves[i].CurrentPiece = oppKing.CurrentPiece;
+            kingMoves[i].CurrentPiece.Position = kingMoves[i].Position;
+            kingMoves[i].CurrentPiece.Moved = true;
+
+
+            foreach (var piece in Board)
+            {
+                if (piece.CurrentPiece == null) continue;
+                if (piece.CurrentPiece.Team != team) continue;
+
+                //find our piece and check if our piece can check opportnent king potential move
+
+                if(CanCaptureTile(piece, kingMoves[i]))
+                {
+                    movesInCheck[i] = true;
+                    break;
+                }
             }
         }
 
-        _possibleMoves = null;
+        bool isCheckMate = true;
 
+        foreach(var move in movesInCheck)
+        {
+            //king can move and not check
+            if (move ==false)
+            {
+                isCheckMate = false;
+                break;
+            } 
+        }
+
+
+        if (isCheckMate) { MoveRecords += "#"; }
         
-        //return res;
     }
-    public bool CanCaptureKing(CGTile currPiece)
+    public bool CanCaptureTile(CGTile currPiece, CGTile targetTile)
+    {
+        List<CGTile> currPossibleMove = currPiece.CurrentPiece.GetMoves(currPiece, currPiece.CurrentPiece.Team, Board);
+
+
+        foreach (var move in currPossibleMove)
+        {
+            if (move.CurrentPiece == null) continue;
+
+            if (move == targetTile)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /*public bool CanCaptureKing(CGTile currPiece)
     {
 
 
@@ -254,7 +349,7 @@ public class CGMovementManager
 
         _possibleMoves = null;
         return res;
-    }
+    }*/
     #endregion
 
 
@@ -298,26 +393,9 @@ public class CGMovementManager
         }
 
         return true;
-    }
-
-    public bool CanCaptureTile(CGTile currPiece, CGTile targetTile)
-    {
-        List <CGTile> currPossibleMove = currPiece.CurrentPiece.GetMoves(currPiece, currPiece.CurrentPiece.Team, Board);
-
-        bool res = false;
-        foreach (var move in currPossibleMove)
-        {
-            if (move.CurrentPiece == null) continue;
-
-            if (move == targetTile)
-            {
-                res = true;
-                break;
-            }
-        }
-        return res;
     }*/
 
+    
     #endregion
 }
   

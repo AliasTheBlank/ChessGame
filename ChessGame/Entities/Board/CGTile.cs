@@ -35,10 +35,7 @@ public class CGTile : Entity
         var col = AddComponent<BoxCollider>();
         col.SetSize(sprite.Width, sprite.Height);
     }
-   /* public string CPiece()
-    {
-        return CurrentPiece.Attribute();
-    }*/
+
     public override void Update()
     {
         base.Update();
