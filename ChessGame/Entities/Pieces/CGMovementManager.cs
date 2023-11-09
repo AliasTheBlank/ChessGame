@@ -5,6 +5,7 @@ using ChessGame.Entities.Sprites;
 using ChessGame.Enums;
 using ChessGame.UI;
 using Nez;
+using System.ComponentModel;
 
 namespace ChessGame.Entities.Pieces;
 
@@ -24,6 +25,10 @@ public class CGMovementManager
     private bool _promotionInProgress;
 
     public static CGTile[,] Board;
+    public static int NumOfMove=0;
+    public string MoveRecords = NumOfMove + ".";
+
+
     private CGMovementManager(CGTile[,] board, Scene mainScene)
     {
         Board = board;
@@ -31,7 +36,10 @@ public class CGMovementManager
         _activePlayer = CGTeam.White;
         _mainScene = mainScene;
     }
-
+    public string GetPlayer()
+    {
+        return _activePlayer.ToString();
+    }
     public static CGMovementManager GetInstance(CGTile[,] board, Scene mainScene)
     {
         if (_instMovementManager == null)
@@ -68,11 +76,14 @@ public class CGMovementManager
                     {
                         _promotionInProgress = true;
                         _mainScene.CreateEntity("pawn-promotion").AddComponent<CGPawnPromotionUI>();
+                        // char fname = char.ToLowerInvariant(clickTile.BoardPosition.GetFileName()).ToString() + clickTile.BoardPosition.GetRankValue().ToString() + ;
+                        MoveRecords += "=";
                         return;
                     }
                 }
                 SwitchTurn();
             }
+            //castle
             else if (_selectedTile.CurrentPiece.Type == CGPieceType.King && _possibleCastleOptions.Contains(clickTile))
             {
                 int file = clickTile.BoardPosition.GetFileName() - 65;
@@ -85,15 +96,22 @@ public class CGMovementManager
                 {
                     rookStartTile = Board[0, rank];
                     rookEndTile = Board[3, rank];
+                    MoveRecords += "O-O-O ,";
                 }
                 else
                 {
                     rookStartTile = Board[7, rank];
                     rookEndTile = Board[5, rank];
+                    MoveRecords += "O-O ,";
+
                 }
 
                 MovePiece(rookStartTile, rookEndTile);
                 MovePiece(_selectedTile, clickTile);
+
+                MoveRecords = MoveRecords.Split(',')[0];
+
+
                 SwitchTurn();
             }
         }
@@ -136,6 +154,8 @@ public class CGMovementManager
         _activePlayer = _activePlayer == CGTeam.White ? CGTeam.Black : CGTeam.White;
         _promotionInProgress = false;
         _possibleCastleOptions = null;
+
+      
     }
 
     public void PromotePawn(CGPieceType type)
@@ -153,12 +173,33 @@ public class CGMovementManager
         promotionUI.Destroy();
         
         SwitchTurn();
+
+        //
     }
 
     private void MovePiece(CGTile start, CGTile end)
     {
+        if (_activePlayer == CGTeam.White)
+        {
+            NumOfMove++;
+            MoveRecords += " "+NumOfMove + ".";
+        }
+        else
+        {
+            MoveRecords += " ";
+        }
+        char? iscapture = null;
+        if (end.CurrentPiece != null)
+        {
+            iscapture = 'x' ;
+        }
+
+        //TODO: Add check to notation
+        MoveRecords +=  EnumHelper.GetDescription(start.CurrentPiece.Type) +iscapture+ char.ToLowerInvariant(end.BoardPosition.GetFileName()) + end.BoardPosition.GetRankValue();
         end.CurrentPiece = start.CurrentPiece;
         end.CurrentPiece.Position = end.Position;
         end.CurrentPiece.Moved = true;
+       
     }
+  
 }

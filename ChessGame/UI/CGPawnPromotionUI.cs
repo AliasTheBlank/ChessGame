@@ -28,24 +28,31 @@ public class CGPawnPromotionUI : UICanvas
             .GetElement<TextButton>().OnClicked += butt =>
         {
             momvementManager.PromotePawn(CGPieceType.Bishop);
+            momvementManager.MoveRecords += EnumHelper.GetDescription(CGPieceType.Bishop);
         };
         
         _table.Add(new TextButton("Knight", topButtonStyle)).SetFillX().SetMinHeight(50)
             .GetElement<TextButton>().OnClicked += butt =>
         {
             momvementManager.PromotePawn(CGPieceType.Knight);
+            momvementManager.MoveRecords += EnumHelper.GetDescription(CGPieceType.Knight);
+
         };
         
         _table.Add(new TextButton("Rook", topButtonStyle)).SetFillX().SetMinHeight(50)
             .GetElement<TextButton>().OnClicked += butt =>
         {
             momvementManager.PromotePawn(CGPieceType.Rook);
+            momvementManager.MoveRecords += EnumHelper.GetDescription(CGPieceType.Rook);
+
         };
         
         _table.Add(new TextButton("Queen", topButtonStyle)).SetFillX().SetMinHeight(50)
             .GetElement<TextButton>().OnClicked += butt =>
         {
             momvementManager.PromotePawn(CGPieceType.Queen);
+            momvementManager.MoveRecords += EnumHelper.GetDescription(CGPieceType.Queen);
+
 
         };
     }

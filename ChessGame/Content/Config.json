@@ -1,6 +1,6 @@
 ﻿{
-  "Host" : "",
-  "Username" : "",
-  "Password" : "",
-  "Database" : "ChessGameDB"
+  "Host": "",
+  "Username": "",
+  "Password": "",
+  "Database": "ChessGameDB"
 }
