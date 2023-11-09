@@ -182,7 +182,8 @@ public class CGMovementManager
         var promotionUI = _mainScene.FindEntity("pawn-promotion");
         
         promotionUI.Destroy();
-        
+        MoveRecords += EnumHelper.GetDescription(type);
+
         SwitchTurn();
 
         //
@@ -248,6 +249,16 @@ public class CGMovementManager
         }
         return false;
     }
+
+    public CGTile[,] KingMoveBoard(CGTile[,] board, CGTile king, CGTile piece) 
+    {
+        CGTile[,] replicatedBoards = board;
+        //king.BoardPositio = piece.BoardPosition;
+
+
+
+        return replicatedBoards;
+    }
     public void GameStateCanCheckMateOpponent(CGTeam team)
     {
 
@@ -263,24 +274,32 @@ public class CGMovementManager
         Array.Fill(movesInCheck, IsCheck);
 
         //Check Mate part
-        //check each potential move if they can check the king potential moves
+        //check each piece potential move if they can check the king potential moves
         //foreach (var moveK in kingMoves)
 
-        CGTile[,] replicatedBoard = Board;
+        CGTile[,] replicatedBoards = Board;
 
         for(int i = 0; i < kingMoves.Count; i++)
         {
 
             //move king to potential move in the replicated board
 
+           /* rookStartTile = Board[0, rank];
+            rookEndTile = Board[3, rank];
+            MoveRecords += "O-O-O ,";*/
 
+            CGTile temp = kingMoves[i];
+            kingMoves[i] = oppKing;
+            oppKing = temp;
 
-            kingMoves[i].CurrentPiece = oppKing.CurrentPiece;
+            
+
             kingMoves[i].CurrentPiece.Position = kingMoves[i].Position;
+            kingMoves[i].CurrentPiece = oppKing.CurrentPiece;
             kingMoves[i].CurrentPiece.Moved = true;
 
 
-            foreach (var piece in Board)
+            foreach (var piece in replicatedBoards)
             {
                 if (piece.CurrentPiece == null) continue;
                 if (piece.CurrentPiece.Team != team) continue;
