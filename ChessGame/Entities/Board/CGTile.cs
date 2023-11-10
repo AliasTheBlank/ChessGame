@@ -35,14 +35,18 @@ public class CGTile : Entity
         var col = AddComponent<BoxCollider>();
         col.SetSize(sprite.Width, sprite.Height);
     }
-   /* public string CPiece()
-    {
-        return CurrentPiece.Attribute();
-    }*/
+
     public override void Update()
     {
         base.Update();
     }
     public bool IsEmpty => CurrentPiece == null;
+
+    public CGTile(CGTile tile) 
+    { 
+        this.BoardPosition = new BoardPosition(tile.BoardPosition.GetFileName(), tile.BoardPosition.GetRankValue());
+        this.CurrentPiece = tile.CurrentPiece;
+
+    }
 
 }

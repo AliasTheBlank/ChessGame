@@ -28,7 +28,8 @@ public class CGGameScene : Scene
         
         Screen.SetSize(660*2, 660*2);
 
-        CreateEntity("game-ui").AddComponent<GameUI>();
+        GameUI gameUI = CreateEntity("game-ui").AddComponent<GameUI>();
+
         Canvas = CreateEntity("ui").AddComponent(new UICanvas());
         Canvas.IsFullScreen = true;
         Canvas.RenderLayer = ScreenSpaceRenderLayer;
@@ -44,7 +45,7 @@ public class CGGameScene : Scene
 
 
         string cGTeam = movementManager.GetPlayer();
-
+        gameUI.player = cGTeam;
 
         cbGenerator.PopulateBoard(board, 0.4f);
     }
