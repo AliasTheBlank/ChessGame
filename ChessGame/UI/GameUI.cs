@@ -15,7 +15,6 @@ namespace ChessGame.UI
         private DateTime curr_time;
         private DateTime old_time;
         private int delta;
-        private int playTime;
         public string player { get; set; }
 
         private Label turnLabel;
@@ -28,7 +27,6 @@ namespace ChessGame.UI
             delta = Convert.ToInt32((curr_time - old_time).TotalSeconds);
 
             timeLabel.SetText("Timer: "+delta.ToString()+"/120s");
-            playTime += delta;
 
             turnLabel.SetText("Player " + player + "'s turn");
 

@@ -11,15 +11,10 @@ namespace ChessGame.UI
 {
     public class GameOverUI: UICanvas
     {
-        public int playtime;
         public string player;
+        public string moveRecords;
 
-        public override void Update()
-        {
 
-           
-
-        }
 
         public override void OnAddedToEntity()
         {
@@ -35,41 +30,56 @@ namespace ChessGame.UI
                 DownFontColor = Color.Black
             };
 
-            topButtonStyle.FontScale = 1.5f;
-
-
-
-
-
-            var menuTab = new Table().Center();
+            topButtonStyle.FontScale = 2f;
 
 
 
             var lblStyle = new LabelStyle(Color.White);
-            lblStyle.FontScale = 5f;
-            lblStyle.Background = (new PrimitiveDrawable(Color.Black));
+            lblStyle.FontScale = 4f;
+            //lblStyle.Background = (new PrimitiveDrawable(Color.Black));
+
+
+
+
 
 
             var lblTitle = new Nez.UI.Label("Game Over");
-            lblTitle.SetFontScale(5);
-            lblTitle.SetBackground(new PrimitiveDrawable(Color.Black));
-            _table.Add(lblTitle);
+            lblTitle.SetFontScale(3);
+
+            _table.Add(lblTitle).SetMinWidth(60).SetMinHeight(60);
             _table.Row().SetPadTop(20);
             _table.Row().SetPadBottom(10);
 
-            var lblContent = new Nez.UI.Label(player+" Win!!!");
-            lblTitle.SetFontScale(5);
-            _table.Add(lblTitle);
+            var lblContent = new Nez.UI.Label(player + " Win!!!",lblStyle) ;
+            _table.Add(lblContent).SetMinWidth(60).SetMinHeight(60);
             _table.Row().SetPadTop(20);
             _table.Row().SetPadBottom(10);
 
-            var lblConten2 = new Nez.UI.Label("Total play time: "+playtime+" seconds");
-            lblTitle.SetFontScale(5);
-            _table.Add(lblTitle);
+
+            var lblMoveRecord = new Label("Move records:");
+            lblMoveRecord.SetFontScale(3f);
+            _table.Add(lblMoveRecord);
+            _table.Row().SetPadTop(20);
+            _table.Row().SetPadBottom(50);
+
+
+            var txtMoveRecord = new Label(moveRecords);
+            txtMoveRecord.SetFontScale(2f);
+            _table.Add(txtMoveRecord);
             _table.Row().SetPadTop(20);
             _table.Row().SetPadBottom(10);
 
-            _table.Add(new TextButton("Quit", topButtonStyle)).SetFillX().SetMinHeight(50)
+            _table.Add(new TextButton("Back to main menu", topButtonStyle)).SetMinHeight(50)
+                .GetElement<TextButton>().OnClicked += butt =>
+                {
+
+                    TweenManager.StopAllTweens();
+                    Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
+                    Core.StartSceneTransition(new FadeTransition(() => new MenuScene()));
+                };
+            _table.Row().SetPadTop(20);
+
+            _table.Add(new TextButton("Quit", topButtonStyle)).SetMinHeight(50)
                .GetElement<TextButton>().OnClicked += butt =>
                {
                    Environment.Exit(0);

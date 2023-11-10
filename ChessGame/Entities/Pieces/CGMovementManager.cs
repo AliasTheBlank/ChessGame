@@ -7,6 +7,7 @@ using ChessGame.UI;
 using Nez;
 using System.ComponentModel;
 using ChessGame.Structs;
+using ChessGame.Scenes;
 
 namespace ChessGame.Entities.Pieces;
 
@@ -181,16 +182,17 @@ public class CGMovementManager
 
         if (GameStateCanCheckOpportnent(_inactivePlayer, Board))
         {
-            GameStateCanCheckMateOpponent(_inactivePlayer);
-
+            if (GameStateCanCheckMateOpponent(_inactivePlayer)){
+                GameOver();
+            }
         }
     }
 
     public void GameOver()
     {
-        _mainScene.CreateEntity("gameover-ui").AddComponent<GameOverUI>();
+        var gameUI = _mainScene.FindEntity("game-ui").GetComponent<GameUI>();
 
-
+        Core.StartSceneTransition(new FadeTransition(() => new CGGameOverScene(_activePlayer.ToString(),MoveRecords)));
     }
 
     public void PromotePawn(CGPieceType type)
@@ -309,7 +311,7 @@ public class CGMovementManager
         return replicatedBoards;
     }
 
-    public void GameStateCanCheckMateOpponent(CGTeam team)
+    public bool GameStateCanCheckMateOpponent(CGTeam team)
     {
 
 
@@ -325,7 +327,7 @@ public class CGMovementManager
 
         bool[] movesInCheck = new bool[kingMoves.Count];
 
-        Array.Fill(movesInCheck, false);
+       
 
 
         for (int i = 0; i < kingMoves.Count; i++)
@@ -371,8 +373,9 @@ public class CGMovementManager
 
         if (isCheckMate) {
             MoveRecords += "#";
-            GameOver();
+            return true;
         }
+        return false;
 
     }
     public bool CanCaptureTile(CGTile currPiece, CGTile targetTile, CGTile[,] board)
