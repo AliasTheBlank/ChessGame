@@ -42,4 +42,11 @@ public class CGTile : Entity
     }
     public bool IsEmpty => CurrentPiece == null;
 
+    public CGTile(CGTile tile) 
+    { 
+        this.BoardPosition = new BoardPosition(tile.BoardPosition.GetFileName(), tile.BoardPosition.GetRankValue());
+        this.CurrentPiece = tile.CurrentPiece;
+
+    }
+
 }
