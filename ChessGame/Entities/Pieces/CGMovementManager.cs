@@ -8,6 +8,8 @@ using Nez;
 using System.ComponentModel;
 using ChessGame.Structs;
 using ChessGame.Scenes;
+using Microsoft.Xna.Framework;
+using Nez.Sprites;
 
 namespace ChessGame.Entities.Pieces;
 
@@ -17,8 +19,11 @@ public class CGMovementManager
 
     private bool _isTileFocus;
     private CGTile _selectedTile;
-
+    private Color _selectedTileColor;
+    
     private List<CGTile> _possibleMoves;
+    private Dictionary<CGTile, Color> _possibleMovesColors;
+    
     private List<CGTile> _possibleCastleOptions;
 
     private CGTeam _activePlayer;
@@ -26,6 +31,7 @@ public class CGMovementManager
     private Scene _mainScene;
 
     private bool _promotionInProgress;
+    
 
     public static CGTile[,] Board;
     public static int NumOfMove = 0;
@@ -132,14 +138,35 @@ public class CGMovementManager
                 _selectedTile = clickTile;
                 _possibleMoves = _selectedTile.CurrentPiece.GetMoves(_selectedTile, _selectedTile.CurrentPiece.Team, Board);
 
+                _possibleMovesColors = new Dictionary<CGTile, Color>();
+                foreach (CGTile tile in _possibleMoves)
+                {
+                    if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
+                    {
+                        _possibleMovesColors.TryAdd(tile, tileSpriteRenderer.Color);
+
+                        if (!tile.IsEmpty)
+                        {
+                            tileSpriteRenderer.Color = Color.Red;
+                        }
+                        else
+                        {
+                            tileSpriteRenderer.Color = Color.Green;
+                        }
+                    }
+                    
+                }
+
                 if (clickTile.CurrentPiece.Type == CGPieceType.King)
                 {
                     _possibleCastleOptions =
                         CGPossibleMoves.GetCastleMoves(_selectedTile, _selectedTile.CurrentPiece.Team, Board);
-                    foreach (var VARIABLE in _possibleCastleOptions)
-                    {
-                        Console.WriteLine(VARIABLE.BoardPosition);
-                    }
+                }
+                
+                if (clickTile.TryGetComponent<SpriteRenderer>(out var spriteRenderer))
+                {
+                    _selectedTileColor = spriteRenderer.Color;
+                    spriteRenderer.Color = Color.Blue;
                 }
             }
         }
@@ -150,6 +177,7 @@ public class CGMovementManager
     {
         if (_isTileFocus)
         {
+            ResetColors();
             _isTileFocus = false;
             _selectedTile = null;
         }
@@ -157,7 +185,9 @@ public class CGMovementManager
     bool GameRunning = true;
     public void SwitchTurn()
     {
+        ResetColors();
 
+        _possibleMovesColors = null;
         _possibleMoves = null;
         _selectedTile.CurrentPiece = null;
         _isTileFocus = false;
@@ -211,8 +241,6 @@ public class CGMovementManager
         MoveRecords += EnumHelper.GetDescription(type);
 
         SwitchTurn();
-
-        //
     }
 
     private void MovePiece(CGTile start, CGTile end)
@@ -393,6 +421,24 @@ public class CGMovementManager
             }
         }
         return false;
+    }
+
+    private void ResetColors()
+    {
+        if (_selectedTile.TryGetComponent<SpriteRenderer>(out var spriteRenderer))
+        {
+            spriteRenderer.Color = _selectedTileColor;
+        }
+        
+        foreach (CGTile tile in _possibleMoves)
+        {
+            if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
+            {
+                _possibleMovesColors.TryGetValue(tile, out var color);
+
+                tileSpriteRenderer.Color = color;
+            }
+        }
     }
 }
 
