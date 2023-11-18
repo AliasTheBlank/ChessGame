@@ -73,6 +73,10 @@ public class CGMovementManager
 
                 MovePiece(_selectedTile, clickTile);
 
+                if(clickTile.CurrentPiece == null)
+                {
+                    return;
+                }
                 if (clickTile.CurrentPiece.Type == CGPieceType.Pawn)
                 {
                     if ((_activePlayer == CGTeam.White && clickTile.BoardPosition.GetRankValue() == 8)
@@ -171,18 +175,16 @@ public class CGMovementManager
         gameUI.player = _activePlayer.ToString();
         gameUI.ResetTimer();
 
-        if (FindOpportnentKing(_inactivePlayer) == null)
+        if (FindOpportnentKing(_inactivePlayer,Board) == null)
         {
-            GameRunning = false;
-
-            //GAMEOVER 
-
             GameOver();
         }
 
         if (GameStateCanCheckOpportnent(_inactivePlayer, Board))
         {
+            MoveRecords += "+";
             if (GameStateCanCheckMateOpponent(_inactivePlayer)){
+                MoveRecords += "#";
                 GameOver();
             }
         }
@@ -190,9 +192,9 @@ public class CGMovementManager
 
     public void GameOver()
     {
-        var gameUI = _mainScene.FindEntity("game-ui").GetComponent<GameUI>();
+        //var gameUI = _mainScene.FindEntity("game-ui").GetComponent<GameUI>();
 
-        Core.StartSceneTransition(new FadeTransition(() => new CGGameOverScene(_activePlayer.ToString(),MoveRecords)));
+        Core.StartSceneTransition(new FadeTransition(() => new CGGameOverScene(_inactivePlayer.ToString(),MoveRecords)));
     }
 
     public void PromotePawn(CGPieceType type)
@@ -217,6 +219,11 @@ public class CGMovementManager
 
     private void MovePiece(CGTile start, CGTile end)
     {
+        if (IsMoveIllegal(start,end))
+        {
+            return;
+        }
+
         if (_activePlayer == CGTeam.White)
         {
             NumOfMove++;
@@ -237,39 +244,52 @@ public class CGMovementManager
         {
             isCaptured = EnumHelper.GetDescription(start.CurrentPiece.Type) + "x";
         }
-
-
-        //TODO: Add checkmate to notation
-
-
         MoveRecords += isCaptured + char.ToLowerInvariant(end.BoardPosition.GetFileName()) + end.BoardPosition.GetRankValue();
+
         end.CurrentPiece = start.CurrentPiece;
         end.CurrentPiece.Position = end.Position;
         end.CurrentPiece.Moved = true;
 
     }
+    public bool IsMoveIllegal(CGTile start, CGTile end)
+    {
+        var board = MovementBoard(Board,start, end);
+        var curTeam = start.CurrentPiece.Team;
+        var oppTeam = start.CurrentPiece.Team == CGTeam.White ? CGTeam.Black : CGTeam.White;
 
-
-    private CGTile FindOpportnentKing(CGTeam team)
+        CGTile curKing = FindOpportnentKing(oppTeam, board);
+        var kpos = curKing.BoardPosition.ToString();
+        foreach (var piece in board)
+        {
+            if (piece.CurrentPiece == null) continue;
+            if (piece.CurrentPiece.Team == curTeam) continue;
+            var p = piece;
+            
+            if (CanCaptureTile(piece, curKing, board))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    private CGTile FindOpportnentKing(CGTeam team, CGTile[,] board)
     {
         CGTile oppKing = null;
-        foreach (var p in Board)
+        foreach (var p in board)
         {
             if (p.CurrentPiece == null) continue;
             if (p.CurrentPiece.Team == team) continue;
-            //find oppornent king
             if (p.CurrentPiece.Type == CGPieceType.King)
             {
                 oppKing = p;
                 break;
             }
-
         }
         return oppKing;
     }
     private bool GameStateCanCheckOpportnent(CGTeam team, CGTile[,] board)
     {
-        CGTile oppKing = FindOpportnentKing(team);
+        CGTile oppKing = FindOpportnentKing(team,board);
 
         foreach (var piece in board)
         {
@@ -278,7 +298,6 @@ public class CGMovementManager
 
             if (CanCaptureTile(piece, oppKing, board))
             {
-                MoveRecords += "+";
                 return true;
             }
 
@@ -286,7 +305,7 @@ public class CGMovementManager
         return false;
     }
 
-    public CGTile[,] KingMovementBoard(CGTile[,] board, CGTile king, CGTile piece)
+    public CGTile[,] MovementBoard(CGTile[,] board, CGTile start, CGTile end)
     {
 
         CGTile[,] replicatedBoards = new CGTile[board.GetLength(0), board.GetLength(1)];
@@ -296,43 +315,35 @@ public class CGMovementManager
             for (int j = 0; j < board.GetLength(1); j++)
             {
                 replicatedBoards[i, j] = new CGTile(board[i, j]);
-                if (board[i, j].BoardPosition == king.BoardPosition)
-                {
-                    replicatedBoards[i, j] = new CGTile(piece);
-                }
+                if (board[i, j].BoardPosition == start.BoardPosition)
+                    replicatedBoards[i, j] = new CGTile(end, start.BoardPosition);
 
-                if (board[i, j].BoardPosition == piece.BoardPosition)
-                {
-                    replicatedBoards[i, j] = new CGTile(king);
-                }
+                if (board[i, j].BoardPosition == end.BoardPosition)
+                    replicatedBoards[i, j] = new CGTile(start, end.BoardPosition);
+                
             }
         }
-
         return replicatedBoards;
     }
 
     public bool GameStateCanCheckMateOpponent(CGTeam team)
     {
 
-
-        CGTile oppKing = FindOpportnentKing(team);
+        CGTile oppKing = FindOpportnentKing(team,Board);
         //find oppornent king moves
         List<CGTile> kingMoves = oppKing.CurrentPiece.GetMoves(oppKing, oppKing.CurrentPiece.Team, Board);
-        List<BoardPosition>boardPositions = new List<BoardPosition>(kingMoves.Count);
+        List<BoardPosition>kingPotentialPos = new List<BoardPosition>(kingMoves.Count);
+
         for (int i = 0; i < kingMoves.Count; i++)
         {
-            boardPositions.Add(kingMoves[i].BoardPosition);
+            kingPotentialPos.Add(kingMoves[i].BoardPosition);
         }
-        // bool IsCheck = false;
 
         bool[] movesInCheck = new bool[kingMoves.Count];
 
-       
-
-
         for (int i = 0; i < kingMoves.Count; i++)
         {
-            CGTile[,] replicatedBoards = KingMovementBoard(Board, oppKing, kingMoves[i]);
+            CGTile[,] replicatedBoards = MovementBoard(Board, oppKing, kingMoves[i]);
 
             foreach (var piece in replicatedBoards)
             {
@@ -343,18 +354,14 @@ public class CGMovementManager
 
                 foreach (var move in currPossibleMove)
                 {
-                    if (move.BoardPosition == boardPositions[i])
+                    if (move.BoardPosition == kingPotentialPos[i])
                     {
+                        //check for counter move
+
                         movesInCheck[i] = true;
                         break;
                     }
                 }
-
-               /* if (CanCaptureTile(piece, kingMoves[i], replicatedBoards))
-                {
-                    movesInCheck[i] = true;
-                    continue;
-                }*/
             }
         }
 
@@ -362,7 +369,6 @@ public class CGMovementManager
 
         foreach (var move in movesInCheck)
         {
-            //king can move and not check
             if (move == false)
             {
                 isCheckMate = false;
@@ -370,9 +376,7 @@ public class CGMovementManager
             }
         }
 
-
         if (isCheckMate) {
-            MoveRecords += "#";
             return true;
         }
         return false;
@@ -381,19 +385,16 @@ public class CGMovementManager
     public bool CanCaptureTile(CGTile currPiece, CGTile targetTile, CGTile[,] board)
     {
         List<CGTile> currPossibleMove = currPiece.CurrentPiece.GetMoves(currPiece, currPiece.CurrentPiece.Team, board);
-
-
         foreach (var move in currPossibleMove)
         {
             if (move.CurrentPiece == null) continue;
-
             if (move == targetTile)
-            {
                 return true;
-            }
+            
         }
         return false;
     }
+    
 }
 
   

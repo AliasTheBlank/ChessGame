@@ -48,5 +48,10 @@ public class CGTile : Entity
         this.CurrentPiece = tile.CurrentPiece;
 
     }
+    public CGTile(CGTile tile, BoardPosition boardPosition)
+    {
+        this.BoardPosition = new BoardPosition(boardPosition.GetFileName(), boardPosition.GetRankValue());
+        this.CurrentPiece = tile.CurrentPiece;
 
+    }
 }
