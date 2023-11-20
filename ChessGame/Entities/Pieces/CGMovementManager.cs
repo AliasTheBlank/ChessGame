@@ -50,9 +50,9 @@ public class CGMovementManager
     {
         return _activePlayer.ToString();
     }
-    public static CGMovementManager GetInstance(CGTile[,] board, Scene mainScene)
+    public static CGMovementManager GetInstance(CGTile[,] board, Scene mainScene, bool generateNew = false)
     {
-        if (_instMovementManager == null)
+        if (_instMovementManager == null || generateNew)
             _instMovementManager = new CGMovementManager(board, mainScene);
 
         return _instMovementManager;
