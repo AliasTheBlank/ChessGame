@@ -138,24 +138,6 @@ public class CGMovementManager
                 _selectedTile = clickTile;
                 _possibleMoves = _selectedTile.CurrentPiece.GetMoves(_selectedTile, _selectedTile.CurrentPiece.Team, Board);
 
-                _possibleMovesColors = new Dictionary<CGTile, Color>();
-                foreach (CGTile tile in _possibleMoves)
-                {
-                    if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
-                    {
-                        _possibleMovesColors.TryAdd(tile, tileSpriteRenderer.Color);
-
-                        if (!tile.IsEmpty)
-                        {
-                            tileSpriteRenderer.Color = Color.Red;
-                        }
-                        else
-                        {
-                            tileSpriteRenderer.Color = Color.Green;
-                        }
-                    }
-                    
-                }
 
                 if (clickTile.CurrentPiece.Type == CGPieceType.King)
                 {
@@ -168,6 +150,8 @@ public class CGMovementManager
                     _selectedTileColor = spriteRenderer.Color;
                     spriteRenderer.Color = Color.Blue;
                 }
+                
+                ColorPossibleMoves();
             }
         }
 
@@ -177,7 +161,7 @@ public class CGMovementManager
     {
         if (_isTileFocus)
         {
-            ResetColors();
+            ResetTilesColor();
             _isTileFocus = false;
             _selectedTile = null;
         }
@@ -185,7 +169,7 @@ public class CGMovementManager
     bool GameRunning = true;
     public void SwitchTurn()
     {
-        ResetColors();
+        ResetTilesColor();
 
         _possibleMovesColors = null;
         _possibleMoves = null;
@@ -423,7 +407,7 @@ public class CGMovementManager
         return false;
     }
 
-    private void ResetColors()
+    private void ResetTilesColor()
     {
         if (_selectedTile.TryGetComponent<SpriteRenderer>(out var spriteRenderer))
         {
@@ -439,6 +423,49 @@ public class CGMovementManager
                 tileSpriteRenderer.Color = color;
             }
         }
+        
+        if (_possibleCastleOptions != null)
+            foreach (CGTile tile in _possibleCastleOptions)
+            {
+                if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
+                {
+                    _possibleMovesColors.TryGetValue(tile, out var color);
+
+                    tileSpriteRenderer.Color = color;
+                }
+            }
+    }
+
+    private void ColorPossibleMoves()
+    {
+        _possibleMovesColors = new Dictionary<CGTile, Color>();
+        foreach (CGTile tile in _possibleMoves)
+        {
+            if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
+            {
+                _possibleMovesColors.TryAdd(tile, tileSpriteRenderer.Color);
+
+                if (!tile.IsEmpty)
+                {
+                    tileSpriteRenderer.Color = Color.Red;
+                }
+                else
+                {
+                    tileSpriteRenderer.Color = Color.Green;
+                }
+            }
+        }
+
+        if (_possibleCastleOptions != null)
+            foreach (CGTile tile in _possibleCastleOptions)
+            {
+                if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
+                {
+                    _possibleMovesColors.TryAdd(tile, tileSpriteRenderer.Color);
+                    
+                    tileSpriteRenderer.Color = Color.Yellow;
+                }
+            }
     }
 }
 
