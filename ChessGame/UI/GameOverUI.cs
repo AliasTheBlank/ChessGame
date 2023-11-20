@@ -13,7 +13,7 @@ namespace ChessGame.UI
     {
         public string player;
         public string moveRecords;
-
+        public bool stalement;
 
 
         public override void OnAddedToEntity()
@@ -36,12 +36,6 @@ namespace ChessGame.UI
 
             var lblStyle = new LabelStyle(Color.White);
             lblStyle.FontScale = 4f;
-            //lblStyle.Background = (new PrimitiveDrawable(Color.Black));
-
-
-
-
-
 
             var lblTitle = new Nez.UI.Label("Game Over");
             lblTitle.SetFontScale(3);
@@ -50,11 +44,20 @@ namespace ChessGame.UI
             _table.Row().SetPadTop(20);
             _table.Row().SetPadBottom(10);
 
-            var lblContent = new Nez.UI.Label(player + " Win!!!",lblStyle) ;
-            _table.Add(lblContent).SetMinWidth(60).SetMinHeight(60);
-            _table.Row().SetPadTop(20);
-            _table.Row().SetPadBottom(10);
-
+            if (stalement)
+            {
+                var lblContent = new Nez.UI.Label("Draw", lblStyle);
+                _table.Add(lblContent).SetMinWidth(60).SetMinHeight(60);
+                _table.Row().SetPadTop(20);
+                _table.Row().SetPadBottom(10);
+            }
+            else
+            {
+                var lblContent = new Nez.UI.Label(player + " Win!!!", lblStyle);
+                _table.Add(lblContent).SetMinWidth(60).SetMinHeight(60);
+                _table.Row().SetPadTop(20);
+                _table.Row().SetPadBottom(10);
+            }
 
             var lblMoveRecord = new Label("Move records:");
             lblMoveRecord.SetFontScale(3f);
