@@ -28,12 +28,13 @@ namespace ChessGame.Scenes
         }
 
 
-        public CGGameOverScene(string player,string moveRecord)
+        public CGGameOverScene(string player,string moveRecord, bool stalement)
         {
             MoveRecords = moveRecord;
             var gameoverUI = new GameOverUI();
             gameoverUI.moveRecords = MoveRecords;
             gameoverUI.player = player;
+            gameoverUI.stalement = stalement;
 
             CreateEntity("gameover-ui").AddComponent(gameoverUI);
         }
