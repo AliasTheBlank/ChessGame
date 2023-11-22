@@ -12,6 +12,7 @@ namespace ChessGame.UI;
 
 public class RegisterUI : UICanvas
 {
+    public int PlayerSession;
     public override void OnAddedToEntity()
     {
         base.OnAddedToEntity();
@@ -95,7 +96,7 @@ public class RegisterUI : UICanvas
         {
             TweenManager.StopAllTweens();
             Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
-            Core.StartSceneTransition(new FadeTransition(() => new CGLogInScene()));
+            Core.StartSceneTransition(new FadeTransition(() => new CGLogInScene(PlayerSession)));
         };
     }
 }

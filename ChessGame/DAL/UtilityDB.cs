@@ -99,4 +99,29 @@ public class UtilityDB
         
         conn.Close();
     }
+
+    public static Player GetPlayer(string username)
+    {
+        using var conn = GetConnection();
+
+        using var cmd =
+            new NpgsqlCommand("Select * from players where Username = (@pUsername)", conn)
+            {
+                Parameters =
+                {
+                    new("@pUsername", username)
+                }
+            };
+
+        using (var reader = cmd.ExecuteReader())
+        {
+            while (reader.Read())
+            {
+                return new Player(reader["Username"].ToString(), Convert.ToInt32(reader["elo"].ToString()));
+            }
+        }
+
+        conn.Close();
+        return null;
+    }
 }

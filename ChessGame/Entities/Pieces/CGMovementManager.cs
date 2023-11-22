@@ -171,6 +171,22 @@ public class CGMovementManager
     {
         ResetTilesColor();
 
+        if (FindOpportnentKing(_inactivePlayer) == null)
+        {
+            GameRunning = false;
+            //GAMEOVER 
+
+            GameOver();
+        }
+
+        if (GameStateCanCheckOpportnent(_inactivePlayer, Board))
+        {
+            if (GameStateCanCheckMateOpponent(_inactivePlayer)){
+                // change elo
+                GameOver();
+            }
+        }
+
         _possibleMovesColors = null;
         _possibleMoves = null;
         _selectedTile.CurrentPiece = null;
@@ -184,22 +200,6 @@ public class CGMovementManager
         var gameUI = _mainScene.FindEntity("game-ui").GetComponent<GameUI>();
         gameUI.player = _activePlayer.ToString();
         gameUI.ResetTimer();
-
-        if (FindOpportnentKing(_inactivePlayer) == null)
-        {
-            GameRunning = false;
-
-            //GAMEOVER 
-
-            GameOver();
-        }
-
-        if (GameStateCanCheckOpportnent(_inactivePlayer, Board))
-        {
-            if (GameStateCanCheckMateOpponent(_inactivePlayer)){
-                GameOver();
-            }
-        }
     }
 
     public void GameOver()

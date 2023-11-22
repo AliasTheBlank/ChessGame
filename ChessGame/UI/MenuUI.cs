@@ -1,6 +1,7 @@
 ﻿using Nez;
 using Nez.UI;
 using System;
+using ChessGame.DAL;
 using Microsoft.Xna.Framework;
 using Nez.ImGuiTools;
 using Nez.Tweens;
@@ -38,21 +39,37 @@ namespace ChessGame.UI
             };
             _table.Row().SetPadTop(20);
 
-            _table.Add(new TextButton("Multi Player Offline", topButtonStyle)).SetFillX().SetMinHeight(50)
+            var playerManager = CGPlayerManager.GetInstance();
+            var playerLoggedIn = playerManager.player1IsLoggedIn ? "Log In player 1" : "Log out Player 1";
+            
+            _table.Add(new TextButton(playerLoggedIn, topButtonStyle)).SetFillX().SetMinHeight(50)
                .GetElement<TextButton>().OnClicked += butt =>
                {
-                   //Go to scene
-
-                   TweenManager.StopAllTweens();
-                   Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
-                   
+                   if (playerManager.player1IsLoggedIn)
+                   {
+                       playerManager.LogOutPlayer(1);
+                   }
+                   else
+                   {
+                       Core.StartSceneTransition(new FadeTransition(() => new CGLogInScene(1)));
+                   }
                };
+            
+            playerLoggedIn = playerManager.player2IsLoggedIn ? "Log In player 2" : "Log out Player 2";
             _table.Row().SetPadTop(20);
-            _table.Add(new TextButton("Multi Player LAN", topButtonStyle)).SetFillX().SetMinHeight(50)
+            _table.Add(new TextButton(playerLoggedIn, topButtonStyle)).SetFillX().SetMinHeight(50)
                .GetElement<TextButton>().OnClicked += butt =>
                {
-                   //Go to scene
+                   if (playerManager.player1IsLoggedIn)
+                   {
+                       playerManager.LogOutPlayer(2);
+                   }
+                   else
+                   {
+                       Core.StartSceneTransition(new FadeTransition(() => new CGLogInScene(2)));
+                   }
                };
+            
             _table.Row().SetPadTop(20);
             _table.Add(new TextButton("Log out", topButtonStyle)).SetFillX().SetMinHeight(50)
                .GetElement<TextButton>().OnClicked += butt =>
