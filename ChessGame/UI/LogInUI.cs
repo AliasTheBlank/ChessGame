@@ -12,6 +12,7 @@ namespace ChessGame.UI;
 
 public class LogInUI : UICanvas
 {
+    public int PlayerToRegister;
     public override void OnAddedToEntity()
     {
         base.OnAddedToEntity();
@@ -66,6 +67,9 @@ public class LogInUI : UICanvas
                 lblError.SetText("Invalid user or password");
                 return;
             }
+
+            CGPlayerManager playerManager = CGPlayerManager.GetInstance();
+            playerManager.AssignPlayer(UtilityDB.GetPlayer(userName.GetText()), PlayerToRegister);
             
             TweenManager.StopAllTweens();
             Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
@@ -78,7 +82,15 @@ public class LogInUI : UICanvas
             
             TweenManager.StopAllTweens();
             Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
-            Core.StartSceneTransition(new FadeTransition(() => new CGRegisterScene()));
+            Core.StartSceneTransition(new FadeTransition(() => new CGRegisterScene(PlayerToRegister)));
+        };
+        _table.Row().SetPadTop(20);
+        _table.Add(new TextButton("Continue as guest", topButtonStyle)).SetFillX().SetMinHeight(50)
+            .GetElement<TextButton>().OnClicked += butt =>
+        {
+            TweenManager.StopAllTweens();
+            Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
+            Core.StartSceneTransition(new FadeTransition(() => new MenuScene()));
         };
     }
 }

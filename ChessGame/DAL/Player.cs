@@ -1,4 +1,4 @@
-﻿namespace ChessGame.Entities.Player;
+﻿namespace ChessGame.DAL;
 
 public class Player
 {
@@ -14,5 +14,10 @@ public class Player
     public void ChangeEloPoints(int points)
     {
         _elo += points;
+    }
+
+    public string GetUsername()
+    {
+        return "";
     }
 }
