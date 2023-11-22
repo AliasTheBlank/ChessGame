@@ -216,11 +216,15 @@ public class CGPossibleMoves
         {
             positionX--;
             positionY--;
-            
-            if (!CanAddTile(board[positionX, positionY], team))
+
+            var tile = board[positionX, positionY];
+            if (!CanAddTile(tile, team))
                 return list;
             
-            list.Add(board[positionX, positionY]);
+            list.Add(tile);
+
+            if (!tile.IsEmpty && tile.CurrentPiece.Team != team)
+                break;
         }
 
         return list;
@@ -239,10 +243,14 @@ public class CGPossibleMoves
             positionX++;
             positionY--;
             
-            if (!CanAddTile(board[positionX, positionY], team))
+            var tile = board[positionX, positionY];
+            if (!CanAddTile(tile, team))
                 return list;
             
-            list.Add(board[positionX, positionY]);
+            list.Add(tile);
+
+            if (!tile.IsEmpty && tile.CurrentPiece.Team != team)
+                break;
         }
 
         return list;
@@ -261,10 +269,14 @@ public class CGPossibleMoves
             positionX--;
             positionY++;
             
-            if (!CanAddTile(board[positionX, positionY], team))
+            var tile = board[positionX, positionY];
+            if (!CanAddTile(tile, team))
                 return list;
             
-            list.Add(board[positionX, positionY]);
+            list.Add(tile);
+
+            if (!tile.IsEmpty && tile.CurrentPiece.Team != team)
+                break;
         }
 
         return list;
@@ -283,10 +295,14 @@ public class CGPossibleMoves
             positionX++;
             positionY++;
             
-            if (!CanAddTile(board[positionX, positionY], team))
+            var tile = board[positionX, positionY];
+            if (!CanAddTile(tile, team))
                 return list;
             
-            list.Add(board[positionX, positionY]);
+            list.Add(tile);
+
+            if (!tile.IsEmpty && tile.CurrentPiece.Team != team)
+                break;
         }
 
         return list;
