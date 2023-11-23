@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using ChessGame.DAL;
 using ChessGame.Scenes;
 using Microsoft.Xna.Framework;
@@ -62,18 +63,24 @@ public class LogInUI : UICanvas
         _table.Add(new TextButton("Log in", topButtonStyle)).SetFillX().SetMinHeight(50)
             .GetElement<TextButton>().OnClicked += butt =>
         {
-            if (!UtilityDB.ValidatePlayer(userName.GetText(), password.GetText()))
+            try
             {
-                lblError.SetText("Invalid user or password");
-                return;
-            }
+                if (!UtilityDB.ValidatePlayer(userName.GetText(), password.GetText()))
+                {
+                    lblError.SetText("Invalid user or password");
+                    return;
+                }
 
-            CGPlayerManager playerManager = CGPlayerManager.GetInstance();
-            playerManager.AssignPlayer(UtilityDB.GetPlayer(userName.GetText()), PlayerToRegister);
-            
-            TweenManager.StopAllTweens();
-            Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
-            Core.StartSceneTransition(new FadeTransition(() => new MenuScene()));
+                CGPlayerManager.GetInstance().AssignPlayer(UtilityDB.GetPlayer(userName.GetText()), PlayerToRegister);
+                
+                TweenManager.StopAllTweens();
+                Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
+                Core.StartSceneTransition(new FadeTransition(() => new MenuScene()));
+            }
+            catch (Exception e)
+            {
+                lblError.SetText(e.ToString());
+            }
         };
         _table.Row().SetPadTop(20);
         _table.Add(new TextButton("Sign up", topButtonStyle)).SetFillX().SetMinHeight(50)

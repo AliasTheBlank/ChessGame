@@ -1,4 +1,5 @@
 ﻿using System;
+using ChessGame.Enums;
 
 namespace ChessGame.DAL;
 
@@ -34,10 +35,14 @@ public class CGPlayerManager
         switch (playerIndex)
         {
             case 1:
+                if (player2IsLoggedIn && _player2.GetUsername() == player.GetUsername())
+                    throw new Exception("This user is already logged in");
                 _player1 = player;
                 player1IsLoggedIn = true;
                 break;
             case 2:
+                if (player1IsLoggedIn && _player1.GetUsername() == player.GetUsername())
+                    throw new Exception("This user is already logged in");
                 _player2 = player;
                 player2IsLoggedIn = true;
                 break;
@@ -60,6 +65,20 @@ public class CGPlayerManager
                 break;
             default:
                 throw new Exception("There cannot be more than two players");
+        }
+    }
+
+    public void CalculatePlayerWin(CGTeam winner)
+    {
+        if (winner == CGTeam.White)
+        {
+            UtilityDB.ChangePlayerElo(_player1, 10);
+            UtilityDB.ChangePlayerElo(_player2, -10);
+        }
+        else
+        {
+            UtilityDB.ChangePlayerElo(_player2, 10);
+            UtilityDB.ChangePlayerElo(_player1, -10);
         }
     }
 }
