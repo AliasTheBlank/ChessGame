@@ -71,27 +71,34 @@ public class RegisterUI : UICanvas
         _table.Add(new TextButton("Register", topButtonStyle)).SetFillX().SetMinHeight(50)
             .GetElement<TextButton>().OnClicked += butt =>
         {
-            if (UtilityDB.UserExist(userName.GetText()))
+            try
             {
-                lblError.SetText("User already exist");
-                return;
-            }
+                if (UtilityDB.UserExist(userName.GetText()))
+                {
+                    lblError.SetText("User already exist");
+                    return;
+                }
 
-            if (password.GetText() != confirmPassword.GetText())
+                if (password.GetText() != confirmPassword.GetText())
+                {
+                    lblError.SetText("Password doesn't match");
+                    return;
+                }
+
+                UtilityDB.CreateUser(userName.GetText(), password.GetText());
+                lblError.SetText("User successfully created");
+                userName.SetText("");
+                password.SetText("");
+                confirmPassword.SetText("");
+            }
+            catch
             {
-                lblError.SetText("Password doesn't match");
-                return;
+                lblError.SetText("Servers are currently unavailable");
             }
-
-            UtilityDB.CreateUser(userName.GetText(), password.GetText());
-            lblError.SetText("User successfully created");
-            userName.SetText("");
-            password.SetText("");
-            confirmPassword.SetText("");
         };
 
         _table.Row().SetPadTop(20);
-        _table.Add(new TextButton("Log in", topButtonStyle)).SetFillX().SetMinHeight(50)
+        _table.Add(new TextButton("Already have an account? Log in!", topButtonStyle)).SetFillX().SetMinHeight(50)
             .GetElement<TextButton>().OnClicked += butt =>
         {
             TweenManager.StopAllTweens();

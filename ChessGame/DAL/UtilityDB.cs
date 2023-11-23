@@ -73,12 +73,19 @@ public class UtilityDB
     {
         // add config to the game pipeline.
         // load config and read content
+        try
+        {
+            var jsonString = File.ReadAllText("Content/Config.json");
+            var MyConfig = Json.FromJson<DBConfig>(jsonString);
+            using var dataSource = NpgsqlDataSource.Create(MyConfig.ToString());
         
-        var jsonString = File.ReadAllText("Content/Config.json");
-        var MyConfig = Json.FromJson<DBConfig>(jsonString);
-        using var dataSource = NpgsqlDataSource.Create(MyConfig.ToString());
+            return dataSource.OpenConnection();
+        }
+        catch (Exception e)
+        {
+            throw new Exception("The servers are currently unavailable");
+        }
         
-        return dataSource.OpenConnection();
     }
 
 
@@ -123,5 +130,25 @@ public class UtilityDB
 
         conn.Close();
         return null;
+    }
+
+    public static void ChangePlayerElo(Player playerToChange, int eloToChange)
+    {
+        int newElo = playerToChange.Elo + eloToChange;
+        
+        using var conn = GetConnection();
+
+        using var cmd = new NpgsqlCommand("UPDATE players set elo = @pElo where Username = @pUsername", conn)
+        {
+            Parameters =
+            {
+                new("@pUsername", playerToChange.GetUsername()),
+                new("@Elo", newElo)
+            }
+        };
+
+        cmd.ExecuteNonQuery();
+        conn.Close();
+        playerToChange.ChangeEloPoints(eloToChange);
     }
 }

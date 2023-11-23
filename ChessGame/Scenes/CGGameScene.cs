@@ -19,7 +19,7 @@ public class CGGameScene : Scene
     public UICanvas Canvas;
 
     
-    public CGGameScene()
+    public CGGameScene(EMatchType matchType)
     {
         
         int column = 65;
@@ -41,7 +41,7 @@ public class CGGameScene : Scene
             .SetOffsetY(140);
 
         var board = cbGenerator.Generate(0.8f);
-        var movementManager = CGMovementManager.GetInstance(board, this, true);
+        var movementManager = CGMovementManager.GetInstance(board, this, matchType,true);
 
 
         string cGTeam = movementManager.GetPlayer();

@@ -6,6 +6,7 @@ using ChessGame.Enums;
 using ChessGame.UI;
 using Nez;
 using System.ComponentModel;
+using ChessGame.DAL;
 using ChessGame.Structs;
 using ChessGame.Scenes;
 using Microsoft.Xna.Framework;
@@ -33,6 +34,8 @@ public class CGMovementManager
     private Scene _mainScene;
 
     private bool _promotionInProgress;
+
+    private EMatchType _matchType;
     
 
     public static CGTile[,] Board;
@@ -40,22 +43,23 @@ public class CGMovementManager
     public string MoveRecords = "";
 
 
-    private CGMovementManager(CGTile[,] board, Scene mainScene)
+    private CGMovementManager(CGTile[,] board, Scene mainScene, EMatchType matchType)
     {
         Board = board;
         _isTileFocus = false;
         _activePlayer = CGTeam.White;
         _inactivePlayer = CGTeam.Black;
         _mainScene = mainScene;
+        _matchType = matchType;
     }
     public string GetPlayer()
     {
         return _activePlayer.ToString();
     }
-    public static CGMovementManager GetInstance(CGTile[,] board, Scene mainScene, bool generateNew = false)
+    public static CGMovementManager GetInstance(CGTile[,] board, Scene mainScene, EMatchType matchType, bool generateNew = false)
     {
         if (_instMovementManager == null || generateNew)
-            _instMovementManager = new CGMovementManager(board, mainScene);
+            _instMovementManager = new CGMovementManager(board, mainScene, matchType);
 
         return _instMovementManager;
 
@@ -224,6 +228,10 @@ public class CGMovementManager
         {
             if (GameStateCanCheckMateOpponent(_inactivePlayer)){
                 // change elo
+                if (_matchType == EMatchType.Competitive)
+                {
+                    CGPlayerManager.GetInstance().CalculatePlayerWin(_activePlayer);
+                }
                 GameOver();
             }
         }
