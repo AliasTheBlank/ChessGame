@@ -75,8 +75,8 @@ public class CGMovementManager
         {
             if (_possibleMoves.Contains(clickTile))
             {
-                if (!clickTile.IsEmpty)
-                    clickTile.CurrentPiece.Destroy();
+                /*if (!clickTile.IsEmpty)
+                    clickTile.CurrentPiece.Destroy();*/
 
                 MovePiece(_selectedTile, clickTile);
 
@@ -142,8 +142,8 @@ public class CGMovementManager
             if (!clickTile.IsEmpty) {
                 _isTileFocus = true;
                 _selectedTile = clickTile;
-                _possibleMoves = _selectedTile.CurrentPiece.GetMoves(_selectedTile, _selectedTile.CurrentPiece.Team, Board);
-
+                //_possibleMoves = _selectedTile.CurrentPiece.GetMoves(_selectedTile, _selectedTile.CurrentPiece.Team, Board);
+                _possibleMoves = GetLegalMoves(_selectedTile, _selectedTile.CurrentPiece.Team, Board);
 
                 if (clickTile.CurrentPiece.Type == CGPieceType.King)
                 {
@@ -172,10 +172,22 @@ public class CGMovementManager
             _selectedTile = null;
         }
     }
-    bool GameRunning = true;
+    public List<CGTile> GetLegalMoves(CGTile selectedTile, CGTeam team, CGTile[,] board)
+    {
+        List<CGTile> allPossibleMoves = selectedTile.CurrentPiece.GetMoves(_selectedTile, _selectedTile.CurrentPiece.Team, board);
+
+        List<CGTile> legalMoves = new List<CGTile>();
+        foreach (CGTile move in allPossibleMoves)
+        {
+            if(!IsMoveIllegal(selectedTile,move))
+                legalMoves.Add(move);
+        }
+
+        return legalMoves;
+    }
     public void SwitchTurn()
     {
-        ResetColors();
+        ResetTilesColor();
         if (FindOpportnentKing(_activePlayer, Board) == null)
         {
             GameOver();
@@ -237,9 +249,13 @@ public class CGMovementManager
     }
     private void MovePiece(CGTile start, CGTile end)
     {
+        
+
+
         if (IsMoveIllegal(start, end))
             return;
-
+        if (!end.IsEmpty)
+            end.CurrentPiece.Destroy();
 
         if (_activePlayer == CGTeam.White)
         {
