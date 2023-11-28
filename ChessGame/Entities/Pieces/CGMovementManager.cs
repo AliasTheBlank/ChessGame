@@ -216,46 +216,6 @@ public class CGMovementManager
             }
         }
 
-        if (FindOpportnentKing(_inactivePlayer) == null)
-        {
-            GameRunning = false;
-            //GAMEOVER 
-
-            GameOver();
-        }
-
-        if (GameStateCanCheckOpportnent(_inactivePlayer, Board))
-        {
-            if (GameStateCanCheckMateOpponent(_inactivePlayer)){
-                // change elo
-                if (_matchType == EMatchType.Competitive)
-                {
-                    CGPlayerManager.GetInstance().CalculatePlayerWin(_activePlayer);
-                }
-                GameOver();
-            }
-        }
-
-        if (FindOpportnentKing(_inactivePlayer) == null)
-        {
-            GameRunning = false;
-            //GAMEOVER 
-
-            GameOver();
-        }
-
-        if (GameStateCanCheckOpportnent(_inactivePlayer, Board))
-        {
-            if (GameStateCanCheckMateOpponent(_inactivePlayer)){
-                // change elo
-                if (_matchType == EMatchType.Competitive)
-                {
-                    CGPlayerManager.GetInstance().CalculatePlayerWin(_activePlayer);
-                }
-                GameOver();
-            }
-        }
-
         _possibleMovesColors = null;
         _possibleMoves = null;
         _selectedTile.CurrentPiece = null;
@@ -269,14 +229,6 @@ public class CGMovementManager
         var gameUI = _mainScene.FindEntity("game-ui").GetComponent<GameUI>();
         gameUI.player = _activePlayer.ToString();
         gameUI.ResetTimer();
-<<<<<<< HEAD
-<<<<<<< HEAD
-
-       
-=======
->>>>>>> 3bb7418 (feat: keep tracked current players)
-=======
->>>>>>> 91828e7c87398184ffec8a23ee178dff0ecc369a
     }
 
     public void GameOver(bool stalement=false)
@@ -517,67 +469,6 @@ public class CGMovementManager
             }
         }
         return true;
-    }
-
-    private void ResetTilesColor()
-    {
-        if (_selectedTile.TryGetComponent<SpriteRenderer>(out var spriteRenderer))
-        {
-            spriteRenderer.Color = _selectedTileColor;
-        }
-        
-        foreach (CGTile tile in _possibleMoves)
-        {
-            if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
-            {
-                _possibleMovesColors.TryGetValue(tile, out var color);
-
-                tileSpriteRenderer.Color = color;
-            }
-        }
-        
-        if (_possibleCastleOptions != null)
-            foreach (CGTile tile in _possibleCastleOptions)
-            {
-                if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
-                {
-                    _possibleMovesColors.TryGetValue(tile, out var color);
-
-                    tileSpriteRenderer.Color = color;
-                }
-            }
-    }
-
-    private void ColorPossibleMoves()
-    {
-        _possibleMovesColors = new Dictionary<CGTile, Color>();
-        foreach (CGTile tile in _possibleMoves)
-        {
-            if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
-            {
-                _possibleMovesColors.TryAdd(tile, tileSpriteRenderer.Color);
-
-                if (!tile.IsEmpty)
-                {
-                    tileSpriteRenderer.Color = Color.Red;
-                }
-                else
-                {
-                    tileSpriteRenderer.Color = Color.Green;
-                }
-            }
-        }
-
-        if (_possibleCastleOptions != null)
-            foreach (CGTile tile in _possibleCastleOptions)
-            {
-                if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
-                {
-                    _possibleMovesColors.TryAdd(tile, tileSpriteRenderer.Color);
-                    
-                    tileSpriteRenderer.Color = Color.Yellow;
-                }
-            }
     }
 
     private void ResetTilesColor()
