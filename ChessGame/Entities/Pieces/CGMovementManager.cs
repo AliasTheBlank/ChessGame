@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework;
 using Nez.Sprites;
 using ChessGame.Actors;
 
+
 namespace ChessGame.Entities.Pieces;
 
 public class CGMovementManager
@@ -145,6 +146,7 @@ public class CGMovementManager
                 //_possibleMoves = _selectedTile.CurrentPiece.GetMoves(_selectedTile, _selectedTile.CurrentPiece.Team, Board);
                 _possibleMoves = GetLegalMoves(_selectedTile, _selectedTile.CurrentPiece.Team, Board);
 
+
                 if (clickTile.CurrentPiece.Type == CGPieceType.King)
                 {
                     _possibleCastleOptions =
@@ -210,6 +212,7 @@ public class CGMovementManager
             }
         }
 
+        _possibleMovesColors = null;
         _possibleMoves = null;
         _selectedTile.CurrentPiece = null;
         _isTileFocus = false;
@@ -464,6 +467,67 @@ public class CGMovementManager
             }
         }
         return true;
+    }
+
+    private void ResetTilesColor()
+    {
+        if (_selectedTile.TryGetComponent<SpriteRenderer>(out var spriteRenderer))
+        {
+            spriteRenderer.Color = _selectedTileColor;
+        }
+        
+        foreach (CGTile tile in _possibleMoves)
+        {
+            if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
+            {
+                _possibleMovesColors.TryGetValue(tile, out var color);
+
+                tileSpriteRenderer.Color = color;
+            }
+        }
+        
+        if (_possibleCastleOptions != null)
+            foreach (CGTile tile in _possibleCastleOptions)
+            {
+                if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
+                {
+                    _possibleMovesColors.TryGetValue(tile, out var color);
+
+                    tileSpriteRenderer.Color = color;
+                }
+            }
+    }
+
+    private void ColorPossibleMoves()
+    {
+        _possibleMovesColors = new Dictionary<CGTile, Color>();
+        foreach (CGTile tile in _possibleMoves)
+        {
+            if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
+            {
+                _possibleMovesColors.TryAdd(tile, tileSpriteRenderer.Color);
+
+                if (!tile.IsEmpty)
+                {
+                    tileSpriteRenderer.Color = Color.Red;
+                }
+                else
+                {
+                    tileSpriteRenderer.Color = Color.Green;
+                }
+            }
+        }
+
+        if (_possibleCastleOptions != null)
+            foreach (CGTile tile in _possibleCastleOptions)
+            {
+                if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
+                {
+                    _possibleMovesColors.TryAdd(tile, tileSpriteRenderer.Color);
+                    
+                    tileSpriteRenderer.Color = Color.Yellow;
+                }
+            }
     }
 
     private void ResetTilesColor()
