@@ -236,6 +236,26 @@ public class CGMovementManager
             }
         }
 
+        if (FindOpportnentKing(_inactivePlayer) == null)
+        {
+            GameRunning = false;
+            //GAMEOVER 
+
+            GameOver();
+        }
+
+        if (GameStateCanCheckOpportnent(_inactivePlayer, Board))
+        {
+            if (GameStateCanCheckMateOpponent(_inactivePlayer)){
+                // change elo
+                if (_matchType == EMatchType.Competitive)
+                {
+                    CGPlayerManager.GetInstance().CalculatePlayerWin(_activePlayer);
+                }
+                GameOver();
+            }
+        }
+
         _possibleMovesColors = null;
         _possibleMoves = null;
         _selectedTile.CurrentPiece = null;
@@ -250,10 +270,13 @@ public class CGMovementManager
         gameUI.player = _activePlayer.ToString();
         gameUI.ResetTimer();
 <<<<<<< HEAD
+<<<<<<< HEAD
 
        
 =======
 >>>>>>> 3bb7418 (feat: keep tracked current players)
+=======
+>>>>>>> 91828e7c87398184ffec8a23ee178dff0ecc369a
     }
 
     public void GameOver(bool stalement=false)
