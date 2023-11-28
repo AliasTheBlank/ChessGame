@@ -79,7 +79,7 @@ public class LogInUI : UICanvas
             }
             catch (Exception e)
             {
-                lblError.SetText(e.ToString());
+                lblError.SetText(e.Message);
             }
         };
         _table.Row().SetPadTop(20);

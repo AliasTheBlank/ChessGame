@@ -52,6 +52,7 @@ namespace ChessGame.UI
                    {
                        playerManager.LogOutPlayer(1);
                        textButton.SetText("Log in player 1");
+                       Core.StartSceneTransition(new FadeTransition(() => new MenuScene()));
                    }
                    else
                    {
@@ -70,6 +71,7 @@ namespace ChessGame.UI
                    {
                        playerManager.LogOutPlayer(2);
                        textButton.SetText("Log in player 2");
+                       Core.StartSceneTransition(new FadeTransition(() => new MenuScene()));
                    }
                    else
                    {
@@ -83,14 +85,9 @@ namespace ChessGame.UI
                 _table.Add(new TextButton("Competitive match", topButtonStyle)).SetFillX().SetMinHeight(50)
                     .GetElement<TextButton>().OnClicked += butt =>
                 {
-                    if (playerManager.player1IsLoggedIn)
-                    {
-                        playerManager.LogOutPlayer(2);
-                    }
-                    else
-                    {
-                        Core.StartSceneTransition(new FadeTransition(() => new CGGameScene(EMatchType.Competitive)));
-                    }
+                    TweenManager.StopAllTweens();
+                    Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
+                    Core.StartSceneTransition(new FadeTransition(() => new CGGameScene(EMatchType.Competitive)));
                 };
             }
             

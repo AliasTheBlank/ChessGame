@@ -143,7 +143,7 @@ public class UtilityDB
             Parameters =
             {
                 new("@pUsername", playerToChange.GetUsername()),
-                new("@Elo", newElo)
+                new("@pElo", newElo)
             }
         };
 
