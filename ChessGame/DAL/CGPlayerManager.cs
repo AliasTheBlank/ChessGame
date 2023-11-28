@@ -42,7 +42,7 @@ public class CGPlayerManager
                 break;
             case 2:
                 if (player1IsLoggedIn && _player1.GetUsername() == player.GetUsername())
-                    throw new Exception("This user is already logged in");
+                    throw new Exception("This user is already logged in"); 
                 _player2 = player;
                 player2IsLoggedIn = true;
                 break;
