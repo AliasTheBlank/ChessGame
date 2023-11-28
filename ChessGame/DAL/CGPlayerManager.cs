@@ -73,12 +73,14 @@ public class CGPlayerManager
         if (winner == CGTeam.White)
         {
             UtilityDB.ChangePlayerElo(_player1, 10);
-            UtilityDB.ChangePlayerElo(_player2, -10);
+            if (_player2.Elo > 0)
+                UtilityDB.ChangePlayerElo(_player2, -10);
         }
         else
         {
             UtilityDB.ChangePlayerElo(_player2, 10);
-            UtilityDB.ChangePlayerElo(_player1, -10);
+            if (_player1.Elo > 0)
+                UtilityDB.ChangePlayerElo(_player1, -10);
         }
     }
 }

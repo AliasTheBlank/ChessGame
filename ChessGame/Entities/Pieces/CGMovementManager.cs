@@ -204,6 +204,12 @@ public class CGMovementManager
             MoveRecords += "+";
             if (GameStateCanCheckMateOpponent(_activePlayer))
             {
+                if (_matchType == EMatchType.Competitive)
+                {
+                    var playerManager = CGPlayerManager.GetInstance();
+                    playerManager.CalculatePlayerWin(_activePlayer);
+                }
+                
                 MoveRecords += "#";
                 GameOver();
             }
