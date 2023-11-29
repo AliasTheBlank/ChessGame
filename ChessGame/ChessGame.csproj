@@ -38,6 +38,7 @@
         </Content>
     </ItemGroup>
     <ItemGroup>
+      <Folder Include="Entities\Player\" />
       <Folder Include="UI\Components\" />
     </ItemGroup>
     <Target Name="RestoreDotnetTools" BeforeTargets="Restore">

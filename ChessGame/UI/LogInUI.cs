@@ -1,4 +1,5 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Windows.Forms;
 using ChessGame.DAL;
 using ChessGame.Scenes;
 using Microsoft.Xna.Framework;
@@ -12,6 +13,7 @@ namespace ChessGame.UI;
 
 public class LogInUI : UICanvas
 {
+    public int PlayerToRegister;
     public override void OnAddedToEntity()
     {
         base.OnAddedToEntity();
@@ -61,15 +63,24 @@ public class LogInUI : UICanvas
         _table.Add(new TextButton("Log in", topButtonStyle)).SetFillX().SetMinHeight(50)
             .GetElement<TextButton>().OnClicked += butt =>
         {
-            if (!UtilityDB.ValidatePlayer(userName.GetText(), password.GetText()))
+            try
             {
-                lblError.SetText("Invalid user or password");
-                return;
+                if (!UtilityDB.ValidatePlayer(userName.GetText(), password.GetText()))
+                {
+                    lblError.SetText("Invalid user or password");
+                    return;
+                }
+
+                CGPlayerManager.GetInstance().AssignPlayer(UtilityDB.GetPlayer(userName.GetText()), PlayerToRegister);
+                
+                TweenManager.StopAllTweens();
+                Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
+                Core.StartSceneTransition(new FadeTransition(() => new MenuScene()));
             }
-            
-            TweenManager.StopAllTweens();
-            Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
-            Core.StartSceneTransition(new FadeTransition(() => new MenuScene()));
+            catch (Exception e)
+            {
+                lblError.SetText(e.Message);
+            }
         };
         _table.Row().SetPadTop(20);
         _table.Add(new TextButton("Sign up", topButtonStyle)).SetFillX().SetMinHeight(50)
@@ -78,7 +89,15 @@ public class LogInUI : UICanvas
             
             TweenManager.StopAllTweens();
             Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
-            Core.StartSceneTransition(new FadeTransition(() => new CGRegisterScene()));
+            Core.StartSceneTransition(new FadeTransition(() => new CGRegisterScene(PlayerToRegister)));
+        };
+        _table.Row().SetPadTop(20);
+        _table.Add(new TextButton("Continue as guest", topButtonStyle)).SetFillX().SetMinHeight(50)
+            .GetElement<TextButton>().OnClicked += butt =>
+        {
+            TweenManager.StopAllTweens();
+            Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
+            Core.StartSceneTransition(new FadeTransition(() => new MenuScene()));
         };
     }
 }

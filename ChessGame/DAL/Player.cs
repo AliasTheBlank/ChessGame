@@ -1,18 +1,23 @@
-﻿namespace ChessGame.Entities.Player;
+﻿namespace ChessGame.DAL;
 
 public class Player
 {
     private string _username;
-    private int _elo;
+    public int Elo { get; private set;  }
 
     public Player(string username, int elo)
     {
         _username = username;
-        _elo = elo;
+        Elo = elo;
     }
 
     public void ChangeEloPoints(int points)
     {
-        _elo += points;
+        Elo += points;
+    }
+
+    public string GetUsername()
+    {
+        return _username;
     }
 }

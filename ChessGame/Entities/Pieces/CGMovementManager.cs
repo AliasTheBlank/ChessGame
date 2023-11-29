@@ -6,6 +6,7 @@ using ChessGame.Enums;
 using ChessGame.UI;
 using Nez;
 using System.ComponentModel;
+using ChessGame.DAL;
 using ChessGame.Structs;
 using ChessGame.Scenes;
 using Microsoft.Xna.Framework;
@@ -33,6 +34,8 @@ public class CGMovementManager
     private Scene _mainScene;
 
     private bool _promotionInProgress;
+
+    private EMatchType _matchType;
     
 
     public static CGTile[,] Board;
@@ -40,22 +43,23 @@ public class CGMovementManager
     public string MoveRecords = "";
 
 
-    private CGMovementManager(CGTile[,] board, Scene mainScene)
+    private CGMovementManager(CGTile[,] board, Scene mainScene, EMatchType matchType)
     {
         Board = board;
         _isTileFocus = false;
         _activePlayer = CGTeam.White;
         _inactivePlayer = CGTeam.Black;
         _mainScene = mainScene;
+        _matchType = matchType;
     }
     public string GetPlayer()
     {
         return _activePlayer.ToString();
     }
-    public static CGMovementManager GetInstance(CGTile[,] board, Scene mainScene, bool generateNew = false)
+    public static CGMovementManager GetInstance(CGTile[,] board, Scene mainScene, EMatchType matchType, bool generateNew = false)
     {
         if (_instMovementManager == null || generateNew)
-            _instMovementManager = new CGMovementManager(board, mainScene);
+            _instMovementManager = new CGMovementManager(board, mainScene, matchType);
 
         return _instMovementManager;
 
@@ -200,6 +204,12 @@ public class CGMovementManager
             MoveRecords += "+";
             if (GameStateCanCheckMateOpponent(_activePlayer))
             {
+                if (_matchType == EMatchType.Competitive)
+                {
+                    var playerManager = CGPlayerManager.GetInstance();
+                    playerManager.CalculatePlayerWin(_activePlayer);
+                }
+                
                 MoveRecords += "#";
                 GameOver();
             }
@@ -225,8 +235,6 @@ public class CGMovementManager
         var gameUI = _mainScene.FindEntity("game-ui").GetComponent<GameUI>();
         gameUI.player = _activePlayer.ToString();
         gameUI.ResetTimer();
-
-       
     }
 
     public void GameOver(bool stalement=false)
@@ -467,67 +475,6 @@ public class CGMovementManager
             }
         }
         return true;
-    }
-
-    private void ResetTilesColor()
-    {
-        if (_selectedTile.TryGetComponent<SpriteRenderer>(out var spriteRenderer))
-        {
-            spriteRenderer.Color = _selectedTileColor;
-        }
-        
-        foreach (CGTile tile in _possibleMoves)
-        {
-            if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
-            {
-                _possibleMovesColors.TryGetValue(tile, out var color);
-
-                tileSpriteRenderer.Color = color;
-            }
-        }
-        
-        if (_possibleCastleOptions != null)
-            foreach (CGTile tile in _possibleCastleOptions)
-            {
-                if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
-                {
-                    _possibleMovesColors.TryGetValue(tile, out var color);
-
-                    tileSpriteRenderer.Color = color;
-                }
-            }
-    }
-
-    private void ColorPossibleMoves()
-    {
-        _possibleMovesColors = new Dictionary<CGTile, Color>();
-        foreach (CGTile tile in _possibleMoves)
-        {
-            if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
-            {
-                _possibleMovesColors.TryAdd(tile, tileSpriteRenderer.Color);
-
-                if (!tile.IsEmpty)
-                {
-                    tileSpriteRenderer.Color = Color.Red;
-                }
-                else
-                {
-                    tileSpriteRenderer.Color = Color.Green;
-                }
-            }
-        }
-
-        if (_possibleCastleOptions != null)
-            foreach (CGTile tile in _possibleCastleOptions)
-            {
-                if (tile.TryGetComponent<SpriteRenderer>(out var tileSpriteRenderer))
-                {
-                    _possibleMovesColors.TryAdd(tile, tileSpriteRenderer.Color);
-                    
-                    tileSpriteRenderer.Color = Color.Yellow;
-                }
-            }
     }
 
     private void ResetTilesColor()

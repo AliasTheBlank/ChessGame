@@ -7,6 +7,8 @@ namespace ChessGame.Scenes;
 
 public class CGLogInScene : Scene
 {
+    private LogInUI _ui;
+        
     public const int ScreenSpaceRenderLayer = 999;
     public UICanvas Canvas;
 
@@ -15,10 +17,13 @@ public class CGLogInScene : Scene
     {
         SetDesignResolution(1280, 720, SceneResolutionPolicy.None);
         Screen.SetSize(1280, 720);
-        CreateEntity("menu-ui").AddComponent<LogInUI>();
+        _ui = CreateEntity("menu-ui").AddComponent<LogInUI>();
     }
 
 
-    public CGLogInScene(){}
+    public CGLogInScene(int playerToRegister = 1)
+    {
+        _ui.PlayerToRegister = playerToRegister;
+    }
 
 }
