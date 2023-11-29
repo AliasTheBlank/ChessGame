@@ -143,7 +143,7 @@ public class CGMovementManager
                 _isTileFocus = true;
                 _selectedTile = clickTile;
                 //_possibleMoves = _selectedTile.CurrentPiece.GetMoves(_selectedTile, _selectedTile.CurrentPiece.Team, Board);
-                _possibleMoves = GetLegalMoves(_selectedTile, _selectedTile.CurrentPiece.Team, Board);
+                _possibleMoves = GetLegalMoves(_selectedTile, Board);
 
                 if (clickTile.CurrentPiece.Type == CGPieceType.King)
                 {
@@ -172,19 +172,39 @@ public class CGMovementManager
             _selectedTile = null;
         }
     }
-    public List<CGTile> GetLegalMoves(CGTile selectedTile, CGTeam team, CGTile[,] board)
+    public List<CGTile> GetLegalMoves(CGTile selectedTile, CGTile[,] board)
     {
         List<CGTile> allPossibleMoves = selectedTile.CurrentPiece.GetMoves(_selectedTile, _selectedTile.CurrentPiece.Team, board);
 
         List<CGTile> legalMoves = new List<CGTile>();
         foreach (CGTile move in allPossibleMoves)
         {
-            if(!IsMoveIllegal(selectedTile,move))
+            if (!IsMoveIllegal(selectedTile, move))
                 legalMoves.Add(move);
         }
 
         return legalMoves;
     }
+    public List<CGTile> GetAllLegalMoves(CGTeam team, CGTile[,] board)
+    {
+        List<CGTile> allPossibleMoves = new List<CGTile>();
+
+        //List<CGTile> legalMoves = new List<CGTile>();
+
+        foreach (var piece in board)
+        {
+            if (piece.CurrentPiece == null) continue;
+            if (piece.CurrentPiece.Team != team) continue;
+
+            allPossibleMoves = piece.CurrentPiece.GetMoves(_selectedTile, _selectedTile.CurrentPiece.Team, board);
+
+            allPossibleMoves.AddRange(GetLegalMoves(piece,board));
+
+            
+        }
+        return allPossibleMoves;
+    }
+
     public void SwitchTurn()
     {
         ResetTilesColor();
@@ -196,6 +216,14 @@ public class CGMovementManager
         if (GameStateCanCheckOpportnent(_activePlayer, Board))
         {
             MoveRecords += "+";
+            /* List<CGTile> allLegalMove = GetAllLegalMoves(_inactivePlayer, Board);
+             if (allLegalMove.Count==0)
+             {
+                 MoveRecords += "#";
+                 //GameOver();
+             }*/
+
+            
             if (GameStateCanCheckMateOpponent(_activePlayer))
             {
                 MoveRecords += "#";
@@ -316,7 +344,6 @@ public class CGMovementManager
             {
                 return true;
             }
-
         }
         return false;
     }
@@ -335,30 +362,70 @@ public class CGMovementManager
 
                 if (board[i, j].BoardPosition == end.BoardPosition)
                     replicatedBoards[i, j] = new CGTile(start, end.BoardPosition);
-                
             }
         }
         return replicatedBoards;
     }
     public bool GameStateCanCheckMateOpponent(CGTeam team)
     {
-
-        CGTile oppKing = FindOpportnentKing(team,Board);
+        CGTile oppKing = FindOpportnentKing(team, Board);
         List<CGTile> kingMoves = oppKing.CurrentPiece.GetMoves(oppKing, oppKing.CurrentPiece.Team, Board);
-        List<BoardPosition>kingPotentialPos = new List<BoardPosition>(kingMoves.Count);
+
+
+        List<CGTile> blackMoves = GetAllLegalMoves(oppKing.CurrentPiece.Team, Board);
+        foreach (var move in kingMoves)
+        {
+            CGTile[,] replicatedBoards = MovementBoard(Board, oppKing, move);
+
+            List<CGTile> allLegalMove = GetAllLegalMoves(oppKing.CurrentPiece.Team, replicatedBoards);
+            if (allLegalMove.Count > 0)
+            {
+                return false;
+            }
+        }
+
+
+        foreach(var tile in Board)
+        {
+            if(tile.CurrentPiece == null ) continue;
+            if(tile.CurrentPiece.Team != oppKing.CurrentPiece.Team) continue;
+
+            //CGTile[,] replicatedBoards = MovementBoard(Board, oppKing, t);
+
+            var tileMoves = GetAllLegalMoves(tile.CurrentPiece.Team, Board);
+            if(tileMoves.Count > 0)
+            {
+                return false;
+            }
+
+        }
+        return true;
+    }
+    /*public bool GameStateCanCheckMateOpponent(CGTeam team)
+    {
+
+        CGTile oppKing = FindOpportnentKing(team, Board);
+        List<CGTile> kingMoves = oppKing.CurrentPiece.GetMoves(oppKing, oppKing.CurrentPiece.Team, Board);
+        List<BoardPosition> kingPotentialPos = new List<BoardPosition>(kingMoves.Count);
 
         for (int i = 0; i < kingMoves.Count; i++)
         {
             kingPotentialPos.Add(kingMoves[i].BoardPosition);
         }
 
-        bool[] movesInCheck = new bool[kingMoves.Count];
-
         for (int i = 0; i < kingMoves.Count; i++)
         {
             CGTile[,] replicatedBoards = MovementBoard(Board, oppKing, kingMoves[i]);
-
-            foreach (var piece in replicatedBoards)
+            if (!GameStateCanCheckOpportnent(team, replicatedBoards))
+            {
+                bool canBeCounter = CanCounterMove(oppKing, replicatedBoards);
+                if (canBeCounter == false)
+                {
+                   
+                }
+                 return false;
+            }
+           *//* foreach (var piece in replicatedBoards)
             {
                 if (piece.CurrentPiece == null) continue;
                 if (piece.CurrentPiece.Team == oppKing.CurrentPiece.Team) continue;
@@ -371,45 +438,59 @@ public class CGMovementManager
                     {
                         //check for counter move
 
-                        movesInCheck[i] = !CanCounterMove(piece, replicatedBoards);
+                        //movesInCheck[i] = !CanCounterMove(piece, replicatedBoards);
                         //movesInCheck[i] = !CanBeCaptured(piece, replicatedBoards);
+                        bool canBeCounter = CanCounterMove(piece, replicatedBoards);
+                        if (canBeCounter == true)
+                        {
+                            return false;
+                        }
                         break;
                     }
                 }
-            }
+            }*//*
         }
 
-        foreach (var move in movesInCheck)
+        *//*foreach (var move in movesInCheck)
         {
             if (move == false)
             {
                 return false;
             }
-        }
+        }*//*
         return true;
 
-    }
+    }*/
     public bool CanCounterMove(CGTile piece, CGTile[,] board)
     {
 
         foreach (var p in board)
         {
-            if (p.CurrentPiece == null) continue;
-            if(p.CurrentPiece.Team == piece.CurrentPiece.Team) continue;
+            if (p.CurrentPiece == null || p.CurrentPiece.Team == piece.CurrentPiece.Team) continue;
+            
 
-            List<CGTile> currPossibleMove = p.CurrentPiece.GetMoves(p, p.CurrentPiece.Team, board);
+            List<CGTile> currPossibleMove = GetLegalMoves(p, board);
 
             foreach (var move in currPossibleMove)
             {
                 //if (move.CurrentPiece == null) continue;
+                CGTile[,] simulatedBoard = MovementBoard(board, p, move);
 
-                if (move == piece)
+                if (!GameStateCanCheckOpportnent(piece.CurrentPiece.Team, simulatedBoard))
+                {
+                    return true;  // There is a countermove
+                }
+              /*  if (move == piece)
                     return true;
 
                 CGTile[,] replicatedBoards = MovementBoard(board, p, move);
+                bool isBoardInCheck = GameStateCanCheckOpportnent(p.CurrentPiece.Team, replicatedBoards);
 
-                if (GameStateCanCheckOpportnent(piece.CurrentPiece.Team, replicatedBoards)==false)
+                if (isBoardInCheck == false)
+                {
+                 
                     return true;
+                }*/
             }
         }
 
