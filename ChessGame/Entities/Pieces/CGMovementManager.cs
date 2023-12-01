@@ -12,6 +12,7 @@ using ChessGame.Scenes;
 using Microsoft.Xna.Framework;
 using Nez.Sprites;
 using ChessGame.Actors;
+using System.IO;
 
 
 namespace ChessGame.Entities.Pieces;
@@ -74,6 +75,8 @@ public class CGMovementManager
 
     public void ManageMovement(CGTile clickTile)
     {
+
+
         if (_promotionInProgress)
             return;
         if (_isTileFocus)
@@ -112,31 +115,8 @@ public class CGMovementManager
             //castle
             else if (_selectedTile.CurrentPiece.Type == CGPieceType.King && _possibleCastleOptions.Contains(clickTile))
             {
-                int file = clickTile.BoardPosition.GetFileName() - 65;
-                int rank = 8 - clickTile.BoardPosition.GetRankValue();
 
-                CGTile rookStartTile;
-                CGTile rookEndTile;
-                // Long castle case
-                if (file == 2)
-                {
-                    rookStartTile = Board[0, rank];
-                    rookEndTile = Board[3, rank];
-                    MoveRecords += "O-O-O ,";
-                }
-                else
-                {
-                    rookStartTile = Board[7, rank];
-                    rookEndTile = Board[5, rank];
-                    MoveRecords += "O-O ,";
-
-                }
-
-                MovePiece(rookStartTile, rookEndTile);
-                MovePiece(_selectedTile, clickTile);
-
-                MoveRecords = MoveRecords.Split(',')[0];
-
+                MovePiece(_selectedTile, clickTile, true);
 
                 SwitchTurn();
             }
@@ -180,7 +160,7 @@ public class CGMovementManager
     }
     public List<CGTile> GetLegalMoves(CGTile selectedTile, CGTile[,] board)
     {
-        List<CGTile> allPossibleMoves = selectedTile.CurrentPiece.GetMoves(selectedTile, _selectedTile.CurrentPiece.Team, board);
+        List<CGTile> allPossibleMoves = selectedTile.CurrentPiece.GetMoves(selectedTile, selectedTile.CurrentPiece.Team, board);
 
         List<CGTile> legalMoves = new List<CGTile>();
         foreach (CGTile move in allPossibleMoves)
@@ -211,6 +191,7 @@ public class CGMovementManager
 
     public void SwitchTurn()
     {
+
         ResetTilesColor();
         if (FindOpportnentKing(_activePlayer, Board) == null)
         {
@@ -250,7 +231,8 @@ public class CGMovementManager
 
         _possibleMovesColors = null;
         _possibleMoves = null;
-        _selectedTile.CurrentPiece = null;
+        if(_selectedTile!=null) { _selectedTile.CurrentPiece = null; }
+
         _isTileFocus = false;
         _selectedTile = null;
         _inactivePlayer = _activePlayer;
@@ -261,6 +243,16 @@ public class CGMovementManager
         var gameUI = _mainScene.FindEntity("game-ui").GetComponent<GameUI>();
         gameUI.player = _activePlayer.ToString();
         gameUI.ResetTimer();
+
+        if(_matchType == EMatchType.AI && _activePlayer == CGTeam.Black) 
+        {
+            ChessAI chessAI = new ChessAI(_instMovementManager);
+
+            (CGTile, CGTile) move = ChessAI.MakeBestMove(Board, _activePlayer);
+
+            MovePiece(move.Item1,move.Item2);
+            SwitchTurn();
+        }
     }
 
     public void GameOver(bool stalement=false)
@@ -284,37 +276,71 @@ public class CGMovementManager
 
         SwitchTurn();
     }
-    private void MovePiece(CGTile start, CGTile end)
+    private void MovePiece(CGTile start, CGTile end, bool castle = false)
     {
-
-        if (IsMoveIllegal(start, end, Board))
-            return;
-        if (!end.IsEmpty)
-            end.CurrentPiece.Destroy();
-
-        if (_activePlayer == CGTeam.White)
+        if (castle == false)
         {
-            NumOfMove++;
-            MoveRecords += " " + NumOfMove + ".";
+            if (IsMoveIllegal(start, end, Board))
+                return;
+            if (!end.IsEmpty)
+                end.CurrentPiece.Destroy();
+
+            if (_activePlayer == CGTeam.White)
+            {
+                NumOfMove++;
+                MoveRecords += " " + NumOfMove + ".";
+            }
+            else
+                MoveRecords += " ";
+
+            string isCaptured = null;
+
+
+            if (end.CurrentPiece != null && EnumHelper.GetDescription(start.CurrentPiece.Type) == "")
+                isCaptured = char.ToLower(start.BoardPosition.GetFileName()) + "x";
+
+            else if (end.CurrentPiece != null)
+                isCaptured = EnumHelper.GetDescription(start.CurrentPiece.Type) + "x";
+
+            MoveRecords += isCaptured + char.ToLowerInvariant(end.BoardPosition.GetFileName()) + end.BoardPosition.GetRankValue();
+
+            end.CurrentPiece = start.CurrentPiece;
+            end.CurrentPiece.Position = end.Position;
+            end.CurrentPiece.Moved = true;
+            if (_matchType == EMatchType.AI&& _activePlayer==CGTeam.Black)
+            {
+                start.CurrentPiece = null;
+            }
         }
         else
-            MoveRecords += " ";
+        {
+            int file = end.BoardPosition.GetFileName() - 65;
+            int rank = 8 - end.BoardPosition.GetRankValue();
+
+            CGTile rookStartTile;
+            CGTile rookEndTile;
+            // Long castle case
+            if (file == 2)
+            {
+                rookStartTile = Board[0, rank];
+                rookEndTile = Board[3, rank];
+                MoveRecords += "O-O-O ,";
+            }
+            else
+            {
+                rookStartTile = Board[7, rank];
+                rookEndTile = Board[5, rank];
+                MoveRecords += "O-O ,";
+
+            }
+
+            MovePiece(rookStartTile, rookEndTile);
+            MovePiece(_selectedTile, end);
+
+            MoveRecords = MoveRecords.Split(',')[0];
+
+        }
         
-        string isCaptured = null;
-
-
-        if (end.CurrentPiece != null && EnumHelper.GetDescription(start.CurrentPiece.Type) == "")
-            isCaptured = char.ToLower(start.BoardPosition.GetFileName()) + "x";
-        
-        else if (end.CurrentPiece != null)
-            isCaptured = EnumHelper.GetDescription(start.CurrentPiece.Type) + "x";
-        
-        MoveRecords += isCaptured + char.ToLowerInvariant(end.BoardPosition.GetFileName()) + end.BoardPosition.GetRankValue();
-
-        end.CurrentPiece = start.CurrentPiece;
-        end.CurrentPiece.Position = end.Position;
-        end.CurrentPiece.Moved = true;
-
     }
     public bool IsMoveIllegal(CGTile start, CGTile end, CGTile[,] board)
     {
@@ -323,7 +349,7 @@ public class CGMovementManager
         return GameStateCanCheckOpportnent(oppTeam, copiedBoard);
         
     }
-    private CGTile FindOpportnentKing(CGTeam team, CGTile[,] board)
+    public CGTile FindOpportnentKing(CGTeam team, CGTile[,] board)
     {
         CGTile oppKing = null;
         foreach (var p in board)
@@ -338,7 +364,7 @@ public class CGMovementManager
         }
         return oppKing;
     }
-    private bool GameStateCanCheckOpportnent(CGTeam team, CGTile[,] board)
+    public bool GameStateCanCheckOpportnent(CGTeam team, CGTile[,] board)
     {
         CGTile oppKing = FindOpportnentKing(team,board);
 
@@ -379,7 +405,8 @@ public class CGMovementManager
 
 
         List<CGTile> blackMoves = GetAllLegalMoves(oppKing.CurrentPiece.Team, Board);
-        foreach (var move in kingMoves)
+
+        foreach (var move in blackMoves)
         {
             CGTile[,] replicatedBoards = MovementBoard(Board, oppKing, move);
 
@@ -392,66 +419,6 @@ public class CGMovementManager
 
         return true;
     }
-    /*public bool GameStateCanCheckMateOpponent(CGTeam team)
-    {
-
-        CGTile oppKing = FindOpportnentKing(team, Board);
-        List<CGTile> kingMoves = oppKing.CurrentPiece.GetMoves(oppKing, oppKing.CurrentPiece.Team, Board);
-        List<BoardPosition> kingPotentialPos = new List<BoardPosition>(kingMoves.Count);
-
-        for (int i = 0; i < kingMoves.Count; i++)
-        {
-            kingPotentialPos.Add(kingMoves[i].BoardPosition);
-        }
-
-        for (int i = 0; i < kingMoves.Count; i++)
-        {
-            CGTile[,] replicatedBoards = MovementBoard(Board, oppKing, kingMoves[i]);
-            if (!GameStateCanCheckOpportnent(team, replicatedBoards))
-            {
-                bool canBeCounter = CanCounterMove(oppKing, replicatedBoards);
-                if (canBeCounter == false)
-                {
-                   
-                }
-                 return false;
-            }
-           *//* foreach (var piece in replicatedBoards)
-            {
-                if (piece.CurrentPiece == null) continue;
-                if (piece.CurrentPiece.Team == oppKing.CurrentPiece.Team) continue;
-
-                List<CGTile> currPossibleMove = piece.CurrentPiece.GetMoves(piece, piece.CurrentPiece.Team, replicatedBoards);
-
-                foreach (var move in currPossibleMove)
-                {
-                    if (move.BoardPosition == kingPotentialPos[i])
-                    {
-                        //check for counter move
-
-                        //movesInCheck[i] = !CanCounterMove(piece, replicatedBoards);
-                        //movesInCheck[i] = !CanBeCaptured(piece, replicatedBoards);
-                        bool canBeCounter = CanCounterMove(piece, replicatedBoards);
-                        if (canBeCounter == true)
-                        {
-                            return false;
-                        }
-                        break;
-                    }
-                }
-            }*//*
-        }
-
-        *//*foreach (var move in movesInCheck)
-        {
-            if (move == false)
-            {
-                return false;
-            }
-        }*//*
-        return true;
-
-    }*/
     public bool CanCounterMove(CGTile piece, CGTile[,] board)
     {
 
@@ -519,7 +486,6 @@ public class CGMovementManager
         return false;
 
     }
-
     public bool IsStalement(CGTeam team)
     {
         foreach(var piece in Board)
@@ -540,6 +506,7 @@ public class CGMovementManager
 
     private void ResetTilesColor()
     {
+        if(_selectedTile==null) return;
         if (_selectedTile.TryGetComponent<SpriteRenderer>(out var spriteRenderer))
         {
             spriteRenderer.Color = _selectedTileColor;

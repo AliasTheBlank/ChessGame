@@ -338,23 +338,24 @@ public class CGPossibleMoves
         var positionX = GetPositionX(selectedTile);
         var positionY = GetPositionY(selectedTile);
 
-        int movementDirection = team == CGTeam.White ? -1 : 1;
-
-        if (!selectedTile.CurrentPiece.Moved && board[positionX, positionY + (movementDirection * 2)].IsEmpty)
+        int movementDirection = selectedTile.CurrentPiece.Team == CGTeam.White ? -1 : 1;
+        int posY = positionY + movementDirection * 2;
+        if (!selectedTile.CurrentPiece.Moved && posY is >= 0 and <= 7 && board[positionX, posY].IsEmpty)
         {
             list.Add(board[positionX, positionY + movementDirection * 2]);
             //Console.WriteLine(positionX + " " + (positionY + movementDirection * 2));
         }
 
-        int posY = positionY + movementDirection;
-        
+        posY = positionY + movementDirection;
+
+
         if (positionX < 7 && posY is >= 0 and <= 7 && IsOccupiedByEnemy(board[positionX + 1, posY], team))
             list.Add(board[positionX + 1, posY]);
         
         if (positionX > 0 &&  posY is >= 0 and <= 7 && IsOccupiedByEnemy(board[positionX - 1, posY], team))
             list.Add(board[positionX - 1, posY]);
         
-        if (board[positionX, posY].IsEmpty && posY is >= 0 and <= 7 )
+        if (posY is >= 0 and <= 7 && board[positionX, posY].IsEmpty)
             list.Add(board[positionX, posY]);
         
         return list;

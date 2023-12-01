@@ -44,4 +44,25 @@ public static class EnumHelper
         }
         return piece.ToString();
     }
+
+    public static int GetPieceValue(CGPieceType piece) 
+    {
+        switch (piece)
+        {
+            case CGPieceType.Pawn:
+                return 1;
+            case CGPieceType.Knight:
+                return 3;
+            case CGPieceType.Bishop:
+                return 3;
+            case CGPieceType.Rook:
+                return 5;
+            case CGPieceType.Queen:
+                return 9;
+            case CGPieceType.King:
+                return 0; // The king's value doesn't affect material balance
+            default:
+                throw new ArgumentOutOfRangeException(nameof(piece), piece, null);
+        }
+    }
 }
