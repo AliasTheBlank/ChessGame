@@ -90,7 +90,16 @@ namespace ChessGame.UI
                     Core.StartSceneTransition(new FadeTransition(() => new CGGameScene(EMatchType.Competitive)));
                 };
             }
-            
+
+            _table.Row().SetPadTop(20);
+            _table.Add(new TextButton("AI match", topButtonStyle)).SetFillX().SetMinHeight(50)
+                .GetElement<TextButton>().OnClicked += butt =>
+                {
+                    TweenManager.StopAllTweens();
+                    Core.GetGlobalManager<ImGuiManager>()?.SetEnabled(true);
+                    Core.StartSceneTransition(new FadeTransition(() => new CGGameScene(EMatchType.AI)));
+                };
+
             _table.Row().SetPadTop(20);
             _table.Add(new TextButton("Log out", topButtonStyle)).SetFillX().SetMinHeight(50)
                .GetElement<TextButton>().OnClicked += butt =>
